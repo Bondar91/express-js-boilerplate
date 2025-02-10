@@ -15,6 +15,9 @@ const compat = new FlatCompat({
 });
 
 export default [
+  {
+    ignores: ['node_modules'],
+  },
   ...compat.extends(),
   {
     plugins: {
@@ -107,7 +110,7 @@ export default [
           trailingUnderscore: 'forbid',
         },
       ],
-      '@typescript-eslint/no-empty-object-type': '0',
+      '@typescript-eslint/no-empty-object-type': 0,
       '@stylistic/ts/semi': ['error', 'always'],
       '@stylistic/ts/member-delimiter-style': [
         'error',
