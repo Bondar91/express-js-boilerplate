@@ -5,6 +5,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import js from '@eslint/js';
 import { FlatCompat } from '@eslint/eslintrc';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,15 +17,16 @@ const compat = new FlatCompat({
 });
 
 export default [
-  {
-    ignores: ['node_modules'],
-  },
   ...compat.extends(),
   {
     plugins: {
       unicorn,
       prettier,
       '@stylistic/ts': stylisticTs,
+      '@typescript-eslint': tseslint,
+    },
+    languageOptions: {
+      parser: tsparser, // <-- Dodaj parser TypeScript
     },
   },
   ...compat.extends('eslint:recommended').map(config => ({
@@ -32,13 +35,11 @@ export default [
   })),
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-
     rules: {
       '@typescript-eslint/explicit-member-accessibility': [
         'error',
         {
           accessibility: 'explicit',
-
           overrides: {
             accessors: 'explicit',
             constructors: 'explicit',
@@ -110,7 +111,12 @@ export default [
           trailingUnderscore: 'forbid',
         },
       ],
-      '@typescript-eslint/no-empty-object-type': 0,
+      '@typescript-eslint/no-empty-object-type': [
+        'error',
+        {
+          allowInterfaces: 'always',
+        },
+      ],
       '@stylistic/ts/semi': ['error', 'always'],
       '@stylistic/ts/member-delimiter-style': [
         'error',
@@ -126,6 +132,7 @@ export default [
           },
         },
       ],
+      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -145,19 +152,6 @@ export default [
       'unicorn/filename-case': 'error',
       'prettier/prettier': 'error',
       curly: 'error',
-
-      'no-unused-vars': [
-        'error',
-        {
-          vars: 'all',
-          args: 'after-used',
-          ignoreRestSiblings: true,
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
-
       'no-debugger': 'error',
     },
   },
@@ -169,16 +163,10 @@ export default [
     })),
   {
     files: ['**/*.ts', '**/*.tsx'],
-
     rules: {
       'no-console': 'warn',
+      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          ignoreRestSiblings: true,
-        },
-      ],
-      'no-unused-vars': [
         'error',
         {
           vars: 'all',

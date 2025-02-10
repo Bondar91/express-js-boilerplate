@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import YAML from 'yamljs';
 import { resolveRefs } from 'json-refs';
 import path from 'path';

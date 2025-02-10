@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import { AppError } from '../errors/app.error';
 import { HttpError } from '../errors/http.error';
 import { BadRequestError } from '../errors/bad-request.error';
-import { CelebrateError, isCelebrateError } from 'celebrate';
+import { type CelebrateError, isCelebrateError } from 'celebrate';
 
 export enum ERROR_CODE {
   VALIDATION_PARSE = 'error.validation.parse',
