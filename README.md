@@ -3,7 +3,7 @@
 
 1. **Clone the repository:**
     ```sh
-    git clone Project
+    git clone https://github.com/PawelRzepinski/invigiclub_backend
     ```
 
 2. **Install dependencies:**
