@@ -1,0 +1,24 @@
+type: object
+required:
+  - error
+  - stack
+properties:
+  error:
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+      errors:
+        type: array
+        items:
+          type: object
+          properties:
+            path:
+              type: string
+              example: "surname"
+            message:
+              type: string
+              example: '"surname" must be a string'
+        nullable: true

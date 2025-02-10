@@ -1,0 +1,83 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Boilerplate example API
+servers:
+  - url: http://localhost:3000/api
+
+paths:
+  /users:
+    get:
+      summary: Example method, list all users
+      operationId: listUsers
+      tags:
+        - example
+      responses:
+        "200":
+          description: Array of users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDefault"
+
+    post:
+      summary: Create a new user
+      operationId: createUser
+      tags:
+        - example
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "201":
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid request payload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDefault"
+
+components:
+  schemas:
+    User:
+      $ref: "schemas/user.yaml"
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
+    CreateUserRequest:
+      type: object
+      required:
+        - name
+        - surname
+      properties:
+        name:
+          type: string
+          example: "John"
+        surname:
+          type: string
+          example: "Doe"
+    ErrorDefault:
+      $ref: "schemas/error-default.yaml"
+    Error400:
+      $ref: "schemas/error-400.yaml"

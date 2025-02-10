@@ -1,0 +1,23 @@
+type: object
+properties:
+  id:
+    type: integer
+    example: 0
+  public_id:
+    type: string
+    format: uuid
+    example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  name:
+    type: string
+    example: "string"
+  surname:
+    type: string
+    example: "string"
+  createdAt:
+    type: string
+    format: date-time
+    example: "2025-02-08T17:02:48.050Z"
+  updatedAt:
+    type: string
+    format: date-time
+    example: "2025-02-08T17:02:48.050Z"
