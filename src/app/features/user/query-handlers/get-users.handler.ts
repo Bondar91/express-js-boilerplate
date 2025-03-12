@@ -8,7 +8,6 @@ export class GetUsersHandler implements IQueryHandler<GetUsersQuery, TUserWithou
   public queryType = 'GET_USERS';
 
   public async execute(_query: GetUsersQuery): Promise<TUserWithoutPassword[]> {
-    console.log(_query, 'when add query');
     const users = await getAllUsers();
     return users;
   }

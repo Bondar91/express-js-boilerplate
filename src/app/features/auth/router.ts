@@ -6,8 +6,6 @@ import { loginAction, loginActionValidation } from './actions/login.action';
 import { refreshTokenAction, refreshTokenActionValidation } from './actions/refresh-token.action';
 import { logoutAction } from './actions/logout.action';
 import { authMiddleware } from './middleware/auth.middleware';
-// import { logoutAction } from './actions/logout.action';
-// import { authMiddleware } from './middleware/auth.middleware';
 
 interface ICreateAuthRouting {
   commandBus: CommandBus;
