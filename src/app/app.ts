@@ -13,6 +13,7 @@ import { multiFileSwagger } from '@/tools/multi-file-swagger';
 import YAML from 'yamljs';
 import swaggerUi from 'swagger-ui-express';
 import path from 'path';
+import cookieParser from 'cookie-parser';
 
 export const createApp = async () => {
   const app = express();
@@ -41,6 +42,7 @@ export const createApp = async () => {
   const swaggerPath = path.resolve(__dirname, '../../swagger/api.yaml');
   const swaggerDocument = await multiFileSwagger(YAML.load(swaggerPath));
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  app.use(cookieParser());
   app.use('/api', router);
   app.use('*', (_req, _res, next) => next(new NotFoundError('Page not found')));
   app.use(errorHandler);
