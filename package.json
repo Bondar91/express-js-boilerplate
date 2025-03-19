@@ -6,7 +6,7 @@
     "dev": "tsx --watch --env-file .env src/index.ts",
     "start": "node --env-file .env dist/index.js",
     "build": "tsc",
-    "lint": "eslint . --config eslint.config.mjs",
+    "lint:check": "eslint . --config eslint.config.mjs",
     "lint:fix": "eslint . --config eslint.config.mjs --fix",
     "format": "prettier --write",
     "format:check": "prettier --check",
