@@ -6,4 +6,4 @@ export class EditOrganizationCommand implements ICommand<IEditOrganizationPayloa
   public type = 'EDIT_ORGANIZATION';
 
   public constructor(public payload: IEditOrganizationPayload) {}
-} 
+}

@@ -48,7 +48,7 @@ export const slugExists = async (slug: string): Promise<boolean> => {
 
 const addOrganizationMembers = async (organizationId: number, memberPublicIds: string[]) => {
   await Promise.all(
-    memberPublicIds.map(async (publicId) => {
+    memberPublicIds.map(async publicId => {
       const user = await prisma.user.findUnique({
         where: { public_id: publicId },
         include: {
@@ -78,7 +78,7 @@ const addOrganizationMembers = async (organizationId: number, memberPublicIds: s
 
 const removeOrganizationMembers = async (organizationId: number, memberPublicIds: string[]) => {
   await Promise.all(
-    memberPublicIds.map(async (publicId) => {
+    memberPublicIds.map(async publicId => {
       const user = await prisma.user.findUnique({
         where: { public_id: publicId },
         include: {

@@ -8,8 +8,22 @@ export class EditOrganizationHandler implements ICommandHandler<EditOrganization
   public commandType = 'EDIT_ORGANIZATION';
 
   public async execute(command: EditOrganizationCommand): Promise<TOrganization> {
-    const { publicId, name, slug, type, address, city, postalCode, country, phone, email, website, settings, active, members } =
-      command.payload;
+    const {
+      publicId,
+      name,
+      slug,
+      type,
+      address,
+      city,
+      postalCode,
+      country,
+      phone,
+      email,
+      website,
+      settings,
+      active,
+      members,
+    } = command.payload;
 
     const updatedOrganization = await updateOrganization({
       publicId,

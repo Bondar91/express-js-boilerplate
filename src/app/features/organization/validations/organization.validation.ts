@@ -2,7 +2,9 @@ import { celebrate, Joi } from 'celebrate';
 
 const organizationBaseValidation = {
   name: Joi.string().max(255),
-  slug: Joi.string().pattern(/^[a-z0-9-]+$/).max(100),
+  slug: Joi.string()
+    .pattern(/^[a-z0-9-]+$/)
+    .max(100),
   type: Joi.string().valid('club', 'academy', 'school'),
   address: Joi.string().max(255).allow(null, ''),
   city: Joi.string().max(100).allow(null, ''),
@@ -46,4 +48,4 @@ export const editOrganizationValidation = celebrate(
     }),
   },
   { abortEarly: false },
-); 
+);
