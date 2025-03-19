@@ -1,0 +1,46 @@
+type: object
+required:
+  - name
+properties:
+  name:
+    type: string
+    description: Nazwa organizacji
+  slug:
+    type: string
+    description: Unikalny identyfikator URL dla organizacji
+  type:
+    type: string
+    default: "club"
+    description: Typ organizacji
+  address:
+    type: string
+    description: Adres organizacji
+  city:
+    type: string
+    description: Miasto
+  postalCode:
+    type: string
+    description: Kod pocztowy
+  country:
+    type: string
+    default: "PL"
+    description: Kraj
+  phone:
+    type: string
+    description: Numer telefonu kontaktowego
+  email:
+    type: string
+    format: email
+    description: Adres email kontaktowy
+  website:
+    type: string
+    format: uri
+    description: Strona internetowa organizacji
+  settings:
+    type: object
+    additionalProperties: true
+    description: Różne ustawienia organizacji
+  active:
+    type: boolean
+    default: true
+    description: Status aktywności organizacji

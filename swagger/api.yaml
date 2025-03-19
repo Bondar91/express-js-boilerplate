@@ -8,7 +8,7 @@ servers:
 paths:
   /users:
     get:
-      summary: Example method, list all users
+      summary: list all users
       operationId: listUsers
       tags:
         - example
@@ -129,6 +129,32 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorDefault"
 
+  /organizations:
+    post:
+      summary: Create organization
+      operationId: createOrganization
+      tags:
+        - organizations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrganizationRequest"
+      responses:
+        "201":
+          description: Organization added correctly
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDefault"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -172,6 +198,10 @@ components:
       $ref: "schemas/refresh-token-request.yaml"
     TokensResponse:
       $ref: "schemas/tokens-response.yaml"
+    Response:
+      $ref: "schemas/response.yaml"
+    OrganizationRequest:
+      $ref: "schemas/organization-request.yaml"
     ErrorDefault:
       $ref: "schemas/error-default.yaml"
     Error400:
