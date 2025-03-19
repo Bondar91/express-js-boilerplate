@@ -1,0 +1,76 @@
+post:
+  summary: Create a new organization
+  operationId: createOrganization
+  tags:
+    - organizations
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/organization/create-request.yaml"
+  responses:
+    "201":
+      description: Organization created successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/organization/organization.yaml"
+    "400":
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/common/error-400.yaml"
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/common/error-default.yaml"
+
+"organizations/{publicId}":
+  patch:
+    summary: Update an organization
+    operationId: updateOrganization
+    tags:
+      - organizations
+    parameters:
+      - name: publicId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Public ID of the organization to update
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrganizationUpdateRequest"
+    responses:
+      "200":
+        description: Organization updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Organization"
+      "400":
+        description: Bad Request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Error400"
+      "404":
+        description: Organization not found
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ErrorDefault"
+      default:
+        description: Unexpected error
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ErrorDefault" 

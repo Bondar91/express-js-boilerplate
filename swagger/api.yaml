@@ -6,154 +6,18 @@ servers:
   - url: http://localhost:3000/api
 
 paths:
-  /users:
-    get:
-      summary: list all users
-      operationId: listUsers
-      tags:
-        - example
-      responses:
-        "200":
-          description: Array of users
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Users"
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDefault"
-
-    post:
-      summary: Create a new user
-      operationId: createUser
-      tags:
-        - example
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateUserRequest"
-      responses:
-        "201":
-          description: User successfully created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          description: Invalid request payload
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error400"
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-          $ref: "#/components/schemas/ErrorDefault"
-
-  /auth/login:
-    post:
-      summary: Login user
-      operationId: loginUser
-      tags:
-        - auth
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LoginRequest"
-      responses:
-        "200":
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthResponse"
-        "401":
-          description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDefault"
-
-  /auth/refresh-token:
-    post:
-      summary: Refresh JWT tokens
-      operationId: refreshToken
-      tags:
-        - auth
-      responses:
-        "200":
-          description: Tokens refreshed successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthResponse"
-        "401":
-          description: Invalid refresh token
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDefault"
-
-  /auth/logout:
-    post:
-      summary: Logout user
-      operationId: logoutUser
-      tags:
-        - auth
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: Logged out successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Logged out successfully"
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDefault"
-
   /organizations:
-    post:
-      summary: Create organization
-      operationId: createOrganization
-      tags:
-        - organizations
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/OrganizationRequest"
-      responses:
-        "201":
-          description: Organization added correctly
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Response"
-        "401":
-          description: Invalid credentials
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorDefault"
+    $ref: "paths/organizations.yaml"
+  /organizations/{publicId}:
+    $ref: "paths/organizations/{publicId}.yaml"
+  /auth/login:
+    $ref: "paths/auth/login.yaml"
+  /auth/refresh-token:
+    $ref: "paths/auth/refresh-token.yaml"
+  /auth/logout:
+    $ref: "paths/auth/logout.yaml"
+  /users:
+    $ref: "paths/users.yaml"
 
 components:
   securitySchemes:
@@ -164,45 +28,20 @@ components:
 
   schemas:
     User:
-      $ref: "schemas/user.yaml"
+      $ref: "schemas/user/user.yaml"
     Users:
       type: array
       items:
         $ref: "#/components/schemas/User"
     CreateUserRequest:
-      type: object
-      required:
-        - name
-        - surname
-        - email
-        - password
-      properties:
-        name:
-          type: string
-          example: "John"
-        surname:
-          type: string
-          example: "Doe"
-        email:
-          type: string
-          example: "test@example.com"
-        password:
-          type: string
-          example: "haslo1234"
-
-    LoginRequest:
-      $ref: "schemas/login-request.yaml"
-    AuthResponse:
-      $ref: "schemas/auth-response.yaml"
-    RefreshTokenRequest:
-      $ref: "schemas/refresh-token-request.yaml"
-    TokensResponse:
-      $ref: "schemas/tokens-response.yaml"
-    Response:
-      $ref: "schemas/response.yaml"
+      $ref: "schemas/user/create-request.yaml"
+    Organization:
+      $ref: "schemas/organization/organization.yaml"
     OrganizationRequest:
-      $ref: "schemas/organization-request.yaml"
+      $ref: "schemas/organization/create-request.yaml"
+    OrganizationUpdateRequest:
+      $ref: "schemas/organization/update-request.yaml"
     ErrorDefault:
-      $ref: "schemas/error-default.yaml"
+      $ref: "schemas/common/error-default.yaml"
     Error400:
-      $ref: "schemas/error-400.yaml"
+      $ref: "schemas/common/error-400.yaml"

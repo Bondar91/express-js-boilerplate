@@ -1,0 +1,51 @@
+get:
+  summary: List all users
+  operationId: listUsers
+  tags:
+    - users
+  responses:
+    "200":
+      description: Array of users
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../schemas/user/user.yaml"
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/common/error-default.yaml"
+
+post:
+  summary: Create a new user
+  operationId: createUser
+  tags:
+    - users
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../schemas/user/create-request.yaml"
+  responses:
+    "201":
+      description: User successfully created
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/user/user.yaml"
+    "400":
+      description: Invalid request payload
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/common/error-400.yaml"
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/common/error-default.yaml" 

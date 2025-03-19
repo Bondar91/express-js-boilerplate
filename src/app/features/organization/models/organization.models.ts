@@ -19,4 +19,14 @@ export interface ICreateOrganizationPayload {
   ownerPublicId: string;
 }
 
+export interface IOrganizationMembers {
+  add?: string[];
+  remove?: string[];
+}
+
+export interface IEditOrganizationPayload extends Omit<ICreateOrganizationPayload, 'ownerPublicId'> {
+  publicId: string;
+  members?: IOrganizationMembers;
+}
+
 export interface IGetUsersParams {}

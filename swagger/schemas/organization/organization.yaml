@@ -1,0 +1,40 @@
+type: object
+properties:
+  id:
+    type: number
+  public_id:
+    type: string
+    format: uuid
+  name:
+    type: string
+  slug:
+    type: string
+  type:
+    type: string
+    enum: [CLUB, ASSOCIATION, FEDERATION]
+  address:
+    type: string
+  city:
+    type: string
+  postalCode:
+    type: string
+  country:
+    type: string
+  phone:
+    type: string
+  email:
+    type: string
+    format: email
+  website:
+    type: string
+    format: uri
+  settings:
+    type: object
+  active:
+    type: boolean
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time 
