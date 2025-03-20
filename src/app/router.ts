@@ -17,7 +17,7 @@ export const createRouter = async () => {
 
   router.use('/users', creteUserRouting({ commandBus, queryBus }));
   router.use('/auth', createAuthRouting({ commandBus }));
-  router.use('/organizations', createOrganizationRouting({ commandBus }));
+  router.use('/organizations', createOrganizationRouting({ commandBus, queryBus }));
 
   return router;
 };

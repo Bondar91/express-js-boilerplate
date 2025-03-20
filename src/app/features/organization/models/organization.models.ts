@@ -29,4 +29,26 @@ export interface IEditOrganizationPayload extends Omit<ICreateOrganizationPayloa
   members?: IOrganizationMembers;
 }
 
-export interface IGetUsersParams {}
+export type TOrganizationWithMembers = {
+  OrganizationMember: {
+    user: {
+      public_id: string;
+      name: string;
+      surname: string;
+      email: string;
+    };
+  }[];
+} & Omit<TOrganizationResponse, 'members'>;
+
+export type TOrganizationResponse = Omit<TOrganization, 'id'> & {
+  members: {
+    public_id: string;
+    name: string;
+    surname: string;
+    email: string;
+  }[];
+};
+
+export interface IGetOrgranizationParam {
+  publicId: string;
+}

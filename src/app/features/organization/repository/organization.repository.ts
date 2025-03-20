@@ -1,8 +1,46 @@
 import { prisma } from '@/config/db';
-import type { ICreateOrganizationPayload, IEditOrganizationPayload } from '../models/organization.models';
+import type {
+  ICreateOrganizationPayload,
+  IEditOrganizationPayload,
+  TOrganizationResponse,
+  TOrganizationWithMembers,
+} from '../models/organization.models';
 import { BadRequestError } from '@/errors/bad-request.error';
 import type { Prisma } from '@prisma/client';
 import { NotFoundError } from '@/errors/not-found.error';
+import type { IPaginationParamsDto } from '@/shared/pagination-utils/pagination-utils';
+import { createWhereInput, createOrderBy, calculateSkip } from '@/shared/pagination-utils/pagination-utils';
+import { organizationPaginationOptions } from '../config/pagination.config';
+
+const organizationSelect = {
+  public_id: true,
+  name: true,
+  slug: true,
+  type: true,
+  address: true,
+  city: true,
+  postalCode: true,
+  country: true,
+  phone: true,
+  email: true,
+  website: true,
+  settings: true,
+  active: true,
+  createdAt: true,
+  updatedAt: true,
+  OrganizationMember: {
+    select: {
+      user: {
+        select: {
+          public_id: true,
+          name: true,
+          surname: true,
+          email: true,
+        },
+      },
+    },
+  },
+} as const;
 
 export const createOrganization = async (data: ICreateOrganizationPayload) => {
   const existingOwner = await prisma.user.findUnique({
@@ -143,4 +181,50 @@ export const updateOrganization = async (data: IEditOrganizationPayload) => {
   }
 
   return organizationUpdate;
+};
+
+const transformOrganizationResponse = (organization: TOrganizationWithMembers): TOrganizationResponse => {
+  const { OrganizationMember, ...rest } = organization;
+  return {
+    ...rest,
+    members: OrganizationMember.map(member => ({
+      ...member.user,
+    })),
+  };
+};
+
+export const listOrganizations = async (params: IPaginationParamsDto): Promise<[TOrganizationResponse[], number]> => {
+  const where = createWhereInput(params.filter, params.search, organizationPaginationOptions.searchFields);
+  const orderBy = createOrderBy(params.sort);
+
+  const page = params.page ? Number(params.page) : 1;
+  const limit = params.limit ? Number(params.limit) : organizationPaginationOptions.defaultLimit;
+
+  const [organizations, total] = await Promise.all([
+    prisma.organization.findMany({
+      where,
+      orderBy,
+      skip: calculateSkip(page, limit),
+      take: limit,
+      select: organizationSelect,
+    }),
+    prisma.organization.count({ where }),
+  ]);
+
+  const transformedOrganizations = organizations.map(transformOrganizationResponse);
+
+  return [transformedOrganizations, total];
+};
+
+export const findOrganizationByPublicId = async (publicId: string): Promise<TOrganizationResponse> => {
+  const organization = await prisma.organization.findUnique({
+    where: { public_id: publicId },
+    select: organizationSelect,
+  });
+
+  if (!organization) {
+    throw new NotFoundError('Organization not found');
+  }
+
+  return transformOrganizationResponse(organization);
 };

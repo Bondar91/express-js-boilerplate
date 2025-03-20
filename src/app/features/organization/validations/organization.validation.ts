@@ -24,7 +24,7 @@ const membersValidation = {
   }),
 };
 
-export const createOrganizationValidation = celebrate(
+export const createOrganizationActionValidation = celebrate(
   {
     body: Joi.object().keys({
       ...organizationBaseValidation,
@@ -37,7 +37,7 @@ export const createOrganizationValidation = celebrate(
   { abortEarly: false },
 );
 
-export const editOrganizationValidation = celebrate(
+export const editOrganizationActionValidation = celebrate(
   {
     params: Joi.object().keys({
       publicId: Joi.string().required(),
@@ -45,6 +45,29 @@ export const editOrganizationValidation = celebrate(
     body: Joi.object().keys({
       ...organizationBaseValidation,
       ...membersValidation,
+    }),
+  },
+  { abortEarly: false },
+);
+
+export const listOrganizationsActionValidation = celebrate(
+  {
+    headers: Joi.object(),
+    query: Joi.object().keys({
+      page: Joi.string().optional(),
+      limit: Joi.string().optional(),
+      sort: Joi.string().optional(),
+      filter: Joi.string().optional(),
+      search: Joi.string().optional(),
+    }),
+  },
+  { abortEarly: false },
+);
+
+export const getOrganizationActionValidation = celebrate(
+  {
+    params: Joi.object().keys({
+      publicId: Joi.string().required(),
     }),
   },
   { abortEarly: false },

@@ -1,21 +1,30 @@
 import express from 'express';
-
 import type { CommandBus } from '@/lib/cqrs/command-bus';
-
+import type { QueryBus } from '@/lib/cqrs/query-bus';
 import { createOrganizationAction } from './actions/create-organization.action';
 import { editOrganizationAction } from './actions/edit-organization.action';
+import { listOrganizationsAction } from './actions/list-organizations.action';
 import { authMiddleware } from '../auth/middleware/auth.middleware';
-import { createOrganizationValidation, editOrganizationValidation } from './validations/organization.validation';
+import {
+  createOrganizationActionValidation,
+  editOrganizationActionValidation,
+  getOrganizationActionValidation,
+  listOrganizationsActionValidation,
+} from './validations/organization.validation';
+import { getOrganizationAction } from './actions/get-organization.action';
 
-interface ICreateOrganizationRouting {
+interface IOrganizationRouting {
   commandBus: CommandBus;
+  queryBus: QueryBus;
 }
 
-export const createOrganizationRouting = ({ commandBus }: ICreateOrganizationRouting) => {
+export const createOrganizationRouting = ({ commandBus, queryBus }: IOrganizationRouting) => {
   const router = express.Router();
 
-  router.post('/', [createOrganizationValidation], authMiddleware(), createOrganizationAction(commandBus));
-  router.patch('/:publicId', [editOrganizationValidation], authMiddleware(), editOrganizationAction(commandBus));
+  router.get('/', [listOrganizationsActionValidation], authMiddleware(), listOrganizationsAction(queryBus));
+  router.post('/', [createOrganizationActionValidation], authMiddleware(), createOrganizationAction(commandBus));
+  router.patch('/:publicId', [editOrganizationActionValidation], authMiddleware(), editOrganizationAction(commandBus));
+  router.get('/:publicId', [getOrganizationActionValidation], authMiddleware(), getOrganizationAction(queryBus));
 
   return router;
 };

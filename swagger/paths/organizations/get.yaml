@@ -1,0 +1,40 @@
+get:
+  tags:
+    - Organizations
+  summary: Pobierz organizację
+  description: Pobiera szczegółowe informacje o konkretnej organizacji
+  parameters:
+    - in: path
+      name: publicId
+      required: true
+      schema:
+        type: string
+      description: Publiczny identyfikator organizacji
+      example: "org_123456"
+  responses:
+    '200':
+      description: Pomyślnie pobrano szczegóły organizacji
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/organization/organization.yaml'
+    '404':
+      description: Nie znaleziono organizacji
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Organization not found"
+    '500':
+      description: Błąd serwera
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Internal server error" 

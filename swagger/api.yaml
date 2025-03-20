@@ -1,23 +1,33 @@
-openapi: "3.0.0"
+openapi: 3.0.0
 info:
+  title: InvigiClub API
   version: 1.0.0
-  title: Boilerplate example API
-servers:
-  - url: http://localhost:3000/api
+  description: API for InvigiClub application
 
 paths:
-  /organizations:
-    $ref: "paths/organizations.yaml"
-  /organizations/{publicId}:
-    $ref: "paths/organizations/{publicId}.yaml"
   /auth/login:
     $ref: "paths/auth/login.yaml"
-  /auth/refresh-token:
-    $ref: "paths/auth/refresh-token.yaml"
   /auth/logout:
     $ref: "paths/auth/logout.yaml"
+  /auth/refresh-token:
+    $ref: "paths/auth/refresh-token.yaml"
+
+  /organizations:
+    get:
+      $ref: "paths/organizations/list.yaml#/get"
+    post:
+      $ref: "paths/organizations/create.yaml#/post"
+  /organizations/{publicId}:
+    get:
+      $ref: "paths/organizations/get.yaml#/get"
+    patch:
+      $ref: "paths/organizations/edit.yaml#/patch"
+
   /users:
-    $ref: "paths/users.yaml"
+    get:
+      $ref: "paths/users/list.yaml#/get"
+    post:
+      $ref: "paths/users/create.yaml#/post"
 
 components:
   securitySchemes:
@@ -29,15 +39,11 @@ components:
   schemas:
     User:
       $ref: "schemas/user/user.yaml"
-    Users:
-      type: array
-      items:
-        $ref: "#/components/schemas/User"
-    CreateUserRequest:
+    UserCreateRequest:
       $ref: "schemas/user/create-request.yaml"
     Organization:
       $ref: "schemas/organization/organization.yaml"
-    OrganizationRequest:
+    OrganizationCreateRequest:
       $ref: "schemas/organization/create-request.yaml"
     OrganizationUpdateRequest:
       $ref: "schemas/organization/update-request.yaml"

@@ -1,0 +1,94 @@
+post:
+  tags:
+    - Organizations
+  summary: Utwórz organizację
+  description: Tworzy nową organizację w systemie
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+            - slug
+            - type
+            - ownerPublicId
+          properties:
+            name:
+              type: string
+              example: "Akademia Sportowa Orły"
+            slug:
+              type: string
+              example: "akademia-sportowa-orly"
+            type:
+              type: string
+              enum: ["CLUB", "ASSOCIATION", "FEDERATION"]
+              example: "CLUB"
+            ownerPublicId:
+              type: string
+              example: "usr_123456"
+            address:
+              type: string
+              example: "ul. Sportowa 1"
+            city:
+              type: string
+              example: "Warszawa"
+            postalCode:
+              type: string
+              example: "00-001"
+            country:
+              type: string
+              example: "PL"
+            phone:
+              type: string
+              example: "+48123456789"
+            email:
+              type: string
+              example: "kontakt@orly.pl"
+            website:
+              type: string
+              example: "https://orly.pl"
+            settings:
+              type: object
+            active:
+              type: boolean
+              default: true
+              example: true
+  responses:
+    '201':
+      description: Organizacja została utworzona
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/organization/organization.yaml'
+    '400':
+      description: Nieprawidłowe dane
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "This slug already exists"
+    '404':
+      description: Nie znaleziono właściciela
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Owner with this id not found"
+    '500':
+      description: Błąd serwera
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Internal server error" 

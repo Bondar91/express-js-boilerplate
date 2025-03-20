@@ -1,40 +1,71 @@
 type: object
 properties:
-  id:
-    type: number
   public_id:
     type: string
-    format: uuid
+    example: "org_123456"
   name:
     type: string
+    example: "Sports Club Warsaw"
   slug:
     type: string
+    example: "sports-club-warsaw"
   type:
     type: string
-    enum: [CLUB, ASSOCIATION, FEDERATION]
+    enum: ["CLUB", "ASSOCIATION", "FEDERATION"]
+    example: "CLUB"
   address:
     type: string
+    nullable: true
+    example: "Main Street 123"
   city:
     type: string
+    nullable: true
+    example: "Warsaw"
   postalCode:
     type: string
+    nullable: true
+    example: "00-001"
   country:
     type: string
+    nullable: true
+    example: "Poland"
   phone:
     type: string
+    nullable: true
+    example: "+48123456789"
   email:
     type: string
-    format: email
+    nullable: true
+    example: "contact@sportsclub.com"
   website:
     type: string
-    format: uri
+    nullable: true
+    example: "https://sportsclub.com"
   settings:
     type: object
   active:
     type: boolean
+    example: true
   createdAt:
     type: string
     format: date-time
   updatedAt:
     type: string
-    format: date-time 
+    format: date-time
+  members:
+    type: array
+    items:
+      type: object
+      properties:
+        public_id:
+          type: string
+          example: "235335-fsdgds-532532"
+        name:
+          type: string
+          example: "Admin"
+        surname:
+          type: string
+          example: "Leader"
+        email:
+          type: string
+          example: "admin2@example.com" 
