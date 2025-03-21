@@ -1,0 +1,18 @@
+type: object
+required:
+  - name
+  - surname
+  - email
+  - password
+properties:
+  name:
+    type: string
+    description: Name of the user
+  surname:
+    type: string
+    description: Surname of the user
+  email:
+    type: string
+    description: Email of the user
+  password:
+    type: string

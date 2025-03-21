@@ -1,0 +1,57 @@
+type: object
+properties:
+  name:
+    type: string
+    description: New name of the organization
+  slug:
+    type: string
+    description: New URL-friendly slug
+  type:
+    type: string
+    enum: [CLUB, ASSOCIATION, FEDERATION]
+    description: New type of the organization
+  address:
+    type: string
+    description: New street address
+  city:
+    type: string
+    description: New city name
+  postalCode:
+    type: string
+    description: New postal code
+  country:
+    type: string
+    description: New country name
+  phone:
+    type: string
+    description: New contact phone number
+  email:
+    type: string
+    format: email
+    description: New contact email address
+  website:
+    type: string
+    format: uri
+    description: New organization website URL
+  settings:
+    type: object
+    description: New organization settings
+  active:
+    type: boolean
+    description: New active status
+  owners:
+    type: object
+    description: Owners to add or remove
+    properties:
+      add:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: Array of user public IDs to add as owners
+      remove:
+        type: array
+        items:
+          type: string
+          format: uuid
+        description: Array of user public IDs to remove from owners

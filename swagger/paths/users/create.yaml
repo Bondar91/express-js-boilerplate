@@ -1,0 +1,63 @@
+post:
+  tags:
+    - Users
+  summary: Utwórz użytkownika
+  description: Tworzy nowego użytkownika w systemie
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+            - surname
+            - email
+            - password
+          properties:
+            name:
+              type: string
+              example: "Jan"
+            surname:
+              type: string
+              example: "Kowalski"
+            email:
+              type: string
+              format: email
+              example: "jan.kowalski@example.com"
+            password:
+              type: string
+              format: password
+              example: "StrongPassword123!"
+            role:
+              type: string
+              enum: ["USER", "ADMIN"]
+              default: "USER"
+              example: "USER"
+  responses:
+    '201':
+      description: Użytkownik został utworzony
+      content:
+        application/json:
+          schema:
+            $ref: '../../schemas/user/user.yaml'
+    '400':
+      description: Nieprawidłowe dane
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Email already exists"
+    '500':
+      description: Błąd serwera
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Internal server error" 

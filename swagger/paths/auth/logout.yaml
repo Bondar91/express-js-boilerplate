@@ -1,0 +1,24 @@
+post:
+  summary: Logout user
+  operationId: logoutUser
+  tags:
+    - auth
+  security:
+    - BearerAuth: []
+  responses:
+    "200":
+      description: Logged out successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Logged out successfully"
+    "401":
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/common/error-default.yaml" 

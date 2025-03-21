@@ -1,0 +1,18 @@
+post:
+  summary: Refresh JWT tokens
+  operationId: refreshToken
+  tags:
+    - auth
+  responses:
+    "200":
+      description: Tokens refreshed successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/auth/auth-response.yaml"
+    "401":
+      description: Invalid refresh token
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/common/error-default.yaml" 
