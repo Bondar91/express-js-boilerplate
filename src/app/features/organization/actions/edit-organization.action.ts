@@ -10,7 +10,7 @@ export const editOrganizationAction = (commandBus: CommandBus) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { publicId } = req.params;
-      const { name, slug, type, address, city, postalCode, country, phone, email, website, settings, active, members } =
+      const { name, slug, type, address, city, postalCode, country, phone, email, website, settings, active, owners } =
         req.body;
 
       if (!req.user?.publicId) {
@@ -32,7 +32,7 @@ export const editOrganizationAction = (commandBus: CommandBus) => {
           website,
           settings,
           active,
-          members,
+          owners,
         }),
       );
 
