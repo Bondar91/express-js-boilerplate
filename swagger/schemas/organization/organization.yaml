@@ -52,7 +52,7 @@ properties:
   updatedAt:
     type: string
     format: date-time
-  members:
+  owners:
     type: array
     items:
       type: object
@@ -68,4 +68,4 @@ properties:
           example: "Leader"
         email:
           type: string
-          example: "admin2@example.com" 
+          example: "admin2@example.com"

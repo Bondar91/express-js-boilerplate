@@ -3,7 +3,7 @@ import type {
   ICreateOrganizationPayload,
   IEditOrganizationPayload,
   TOrganizationResponse,
-  TOrganizationWithMembers,
+  TOrganizationWithOwners,
 } from '../models/organization.models';
 import { BadRequestError } from '@/errors/bad-request.error';
 import type { Prisma } from '@prisma/client';
@@ -28,7 +28,7 @@ const organizationSelect = {
   active: true,
   createdAt: true,
   updatedAt: true,
-  OrganizationMember: {
+  OrganizationOwner: {
     select: {
       user: {
         select: {
@@ -65,7 +65,7 @@ export const createOrganization = async (data: ICreateOrganizationPayload) => {
       website: data.website,
       settings: data.settings ? (data.settings as Prisma.InputJsonValue) : undefined,
       active: data.active,
-      OrganizationMember: {
+      OrganizationOwner: {
         create: {
           userId: existingOwner.id,
         },
@@ -84,13 +84,13 @@ export const slugExists = async (slug: string): Promise<boolean> => {
   return count > 0;
 };
 
-const addOrganizationMembers = async (organizationId: number, memberPublicIds: string[]) => {
+const addOrganizationOwners = async (organizationId: number, ownerPublicIds: string[]) => {
   await Promise.all(
-    memberPublicIds.map(async publicId => {
+    ownerPublicIds.map(async publicId => {
       const user = await prisma.user.findUnique({
         where: { public_id: publicId },
         include: {
-          OrganizationMember: {
+          OrganizationOwner: {
             where: { organizationId },
           },
         },
@@ -100,11 +100,11 @@ const addOrganizationMembers = async (organizationId: number, memberPublicIds: s
         throw new BadRequestError(`User not found`);
       }
 
-      if (user.OrganizationMember.length > 0) {
-        throw new BadRequestError(`User is already a member of this organization`);
+      if (user.OrganizationOwner.length > 0) {
+        throw new BadRequestError(`User is already a owner of this organization`);
       }
 
-      await prisma.organizationMember.create({
+      await prisma.organizationOwner.create({
         data: {
           organizationId,
           userId: user.id,
@@ -114,13 +114,13 @@ const addOrganizationMembers = async (organizationId: number, memberPublicIds: s
   );
 };
 
-const removeOrganizationMembers = async (organizationId: number, memberPublicIds: string[]) => {
+const removeOrganizationOwners = async (organizationId: number, ownerPublicIds: string[]) => {
   await Promise.all(
-    memberPublicIds.map(async publicId => {
+    ownerPublicIds.map(async publicId => {
       const user = await prisma.user.findUnique({
         where: { public_id: publicId },
         include: {
-          OrganizationMember: {
+          OrganizationOwner: {
             where: { organizationId },
           },
         },
@@ -130,11 +130,11 @@ const removeOrganizationMembers = async (organizationId: number, memberPublicIds
         throw new BadRequestError(`User not found`);
       }
 
-      if (user.OrganizationMember.length === 0) {
-        throw new BadRequestError(`User is not a member of this organization`);
+      if (user.OrganizationOwner.length === 0) {
+        throw new BadRequestError(`User is not a owner of this organization`);
       }
 
-      await prisma.organizationMember.delete({
+      await prisma.organizationOwner.delete({
         where: {
           organizationId_userId: {
             organizationId,
@@ -150,7 +150,7 @@ export const updateOrganization = async (data: IEditOrganizationPayload) => {
   const organization = await prisma.organization.findUnique({
     where: { public_id: data.publicId },
     include: {
-      OrganizationMember: true,
+      OrganizationOwner: true,
     },
   });
 
@@ -158,7 +158,7 @@ export const updateOrganization = async (data: IEditOrganizationPayload) => {
     throw new NotFoundError('Organization not found');
   }
 
-  const { publicId, members, ...updateData } = data;
+  const { publicId, owners, ...updateData } = data;
 
   if (updateData.slug && updateData.slug !== organization.slug) {
     if (await slugExists(updateData.slug)) {
@@ -171,24 +171,24 @@ export const updateOrganization = async (data: IEditOrganizationPayload) => {
     data: updateData,
   });
 
-  if (members) {
-    if (members.add) {
-      await addOrganizationMembers(organization.id, members.add);
+  if (owners) {
+    if (owners.add) {
+      await addOrganizationOwners(organization.id, owners.add);
     }
-    if (members.remove) {
-      await removeOrganizationMembers(organization.id, members.remove);
+    if (owners.remove) {
+      await removeOrganizationOwners(organization.id, owners.remove);
     }
   }
 
   return organizationUpdate;
 };
 
-const transformOrganizationResponse = (organization: TOrganizationWithMembers): TOrganizationResponse => {
-  const { OrganizationMember, ...rest } = organization;
+const transformOrganizationResponse = (organization: TOrganizationWithOwners): TOrganizationResponse => {
+  const { OrganizationOwner, ...rest } = organization;
   return {
     ...rest,
-    members: OrganizationMember.map(member => ({
-      ...member.user,
+    owners: OrganizationOwner.map(owner => ({
+      ...owner.user,
     })),
   };
 };

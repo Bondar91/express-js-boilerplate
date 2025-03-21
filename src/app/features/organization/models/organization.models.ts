@@ -19,18 +19,18 @@ export interface ICreateOrganizationPayload {
   ownerPublicId: string;
 }
 
-export interface IOrganizationMembers {
+export interface IOrganizationOwners {
   add?: string[];
   remove?: string[];
 }
 
 export interface IEditOrganizationPayload extends Omit<ICreateOrganizationPayload, 'ownerPublicId'> {
   publicId: string;
-  members?: IOrganizationMembers;
+  owners?: IOrganizationOwners;
 }
 
-export type TOrganizationWithMembers = {
-  OrganizationMember: {
+export type TOrganizationWithOwners = {
+  OrganizationOwner: {
     user: {
       public_id: string;
       name: string;
@@ -38,10 +38,10 @@ export type TOrganizationWithMembers = {
       email: string;
     };
   }[];
-} & Omit<TOrganizationResponse, 'members'>;
+} & Omit<TOrganizationResponse, 'owners'>;
 
 export type TOrganizationResponse = Omit<TOrganization, 'id'> & {
-  members: {
+  owners: {
     public_id: string;
     name: string;
     surname: string;

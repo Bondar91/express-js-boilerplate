@@ -21,14 +21,14 @@ CREATE TABLE "Organization" (
 );
 
 -- CreateTable
-CREATE TABLE "OrganizationMember" (
+CREATE TABLE "OrganizationOwner" (
     "id" SERIAL NOT NULL,
     "public_id" TEXT NOT NULL,
     "organizationId" INTEGER NOT NULL,
     "userId" INTEGER NOT NULL,
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "OrganizationMember_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "OrganizationOwner_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -38,13 +38,13 @@ CREATE UNIQUE INDEX "Organization_public_id_key" ON "Organization"("public_id");
 CREATE UNIQUE INDEX "Organization_slug_key" ON "Organization"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "OrganizationMember_public_id_key" ON "OrganizationMember"("public_id");
+CREATE UNIQUE INDEX "OrganizationOwner_public_id_key" ON "OrganizationOwner"("public_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "OrganizationMember_organizationId_userId_key" ON "OrganizationMember"("organizationId", "userId");
+CREATE UNIQUE INDEX "OrganizationOwner_organizationId_userId_key" ON "OrganizationOwner"("organizationId", "userId");
 
 -- AddForeignKey
-ALTER TABLE "OrganizationMember" ADD CONSTRAINT "OrganizationMember_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "OrganizationOwner" ADD CONSTRAINT "OrganizationOwner_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrganizationMember" ADD CONSTRAINT "OrganizationMember_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "OrganizationOwner" ADD CONSTRAINT "OrganizationOwner_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

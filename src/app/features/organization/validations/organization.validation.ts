@@ -17,8 +17,8 @@ const organizationBaseValidation = {
   active: Joi.boolean(),
 };
 
-const membersValidation = {
-  members: Joi.object().keys({
+const ownersValidation = {
+  owners: Joi.object().keys({
     add: Joi.array().items(Joi.string().uuid()),
     remove: Joi.array().items(Joi.string().uuid()),
   }),
@@ -44,7 +44,7 @@ export const editOrganizationActionValidation = celebrate(
     }),
     body: Joi.object().keys({
       ...organizationBaseValidation,
-      ...membersValidation,
+      ...ownersValidation,
     }),
   },
   { abortEarly: false },

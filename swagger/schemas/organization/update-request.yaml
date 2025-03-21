@@ -39,19 +39,19 @@ properties:
   active:
     type: boolean
     description: New active status
-  members:
+  owners:
     type: object
-    description: Members to add or remove
+    description: Owners to add or remove
     properties:
       add:
         type: array
         items:
           type: string
           format: uuid
-        description: Array of user public IDs to add as members
+        description: Array of user public IDs to add as owners
       remove:
         type: array
         items:
           type: string
           format: uuid
-        description: Array of user public IDs to remove from members 
+        description: Array of user public IDs to remove from owners

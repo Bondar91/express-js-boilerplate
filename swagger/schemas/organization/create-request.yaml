@@ -1,15 +1,14 @@
 type: object
 required:
   - name
-  - ownerPublicId
 properties:
   name:
     type: string
     description: Name of the organization
-  ownerPublicId:
+  userPublicId:
     type: string
     format: uuid
-    description: Public ID of the organization owner
+    description: Public ID user of the organization owner from cookies
   slug:
     type: string
     description: URL-friendly slug for the organization

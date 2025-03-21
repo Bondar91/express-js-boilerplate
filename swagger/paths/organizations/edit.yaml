@@ -54,7 +54,7 @@ patch:
             active:
               type: boolean
               example: true
-            members:
+            owners:
               type: object
               properties:
                 add:
@@ -68,13 +68,13 @@ patch:
                     type: string
                   example: ["usr_345678"]
   responses:
-    '200':
+    "200":
       description: Organizacja została zaktualizowana
       content:
         application/json:
           schema:
-            $ref: '../../schemas/organization/organization.yaml'
-    '400':
+            $ref: "../../schemas/common/response.yaml"
+    "400":
       description: Nieprawidłowe dane
       content:
         application/json:
@@ -84,7 +84,7 @@ patch:
               message:
                 type: string
                 example: "This slug already exists"
-    '404':
+    "404":
       description: Nie znaleziono organizacji
       content:
         application/json:
@@ -94,7 +94,7 @@ patch:
               message:
                 type: string
                 example: "Organization not found"
-    '500':
+    "500":
       description: Błąd serwera
       content:
         application/json:
@@ -103,4 +103,4 @@ patch:
             properties:
               message:
                 type: string
-                example: "Internal server error" 
+                example: "Internal server error"
