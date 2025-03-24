@@ -11,7 +11,7 @@ async function hashPassword(password: string): Promise<string> {
 }
 
 // Interfejs dla ról z ich nazwami jako klucze
-interface RolesMap {
+interface IRolesMap {
   [key: string]: SystemRole;
 }
 
@@ -75,7 +75,7 @@ async function main() {
     },
   ];
 
-  const roles: RolesMap = {};
+  const roles: IRolesMap = {};
 
   for (const role of roleData) {
     const createdRole = await prisma.systemRole.create({
