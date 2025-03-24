@@ -5,7 +5,7 @@ import { QueryBus } from '@/lib/cqrs/query-bus';
 import { registerHandlers } from '@/lib/cqrs/handlers-register';
 import { creteUserRouting } from './features/user/router';
 import { createAuthRouting } from './features/auth/router';
-import { createOrganizationRouting } from './features/organization/router';
+import { createOrganizationsRouting } from './features/organizations/router';
 
 export const createRouter = async () => {
   const router = express.Router();
@@ -17,7 +17,7 @@ export const createRouter = async () => {
 
   router.use('/users', creteUserRouting({ commandBus, queryBus }));
   router.use('/auth', createAuthRouting({ commandBus }));
-  router.use('/organizations', createOrganizationRouting({ commandBus, queryBus }));
+  router.use('/organizations', createOrganizationsRouting({ commandBus, queryBus }));
 
   return router;
 };

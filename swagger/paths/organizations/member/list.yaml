@@ -1,8 +1,8 @@
 get:
   tags:
-    - Organizations
-  summary: Lista organizacji
-  description: Pobiera paginowaną listę organizacji z możliwością filtrowania i sortowania
+    - Members
+  summary: Lista członków
+  description: Pobiera paginowaną listę członków z możliwością filtrowania i sortowania
   parameters:
     - in: query
       name: page
@@ -35,8 +35,8 @@ get:
         type: string
       description: Sortowanie w formacie JSON
   responses:
-    '200':
-      description: Pomyślnie pobrano listę organizacji
+    "200":
+      description: Pomyślnie pobrano listę członków danej organizacji
       content:
         application/json:
           schema:
@@ -60,8 +60,8 @@ get:
               data:
                 type: array
                 items:
-                  $ref: '../../schemas/organization/organization.yaml'
-    '400':
+                  $ref: "../../schemas/organization/organization.yaml"
+    "400":
       description: Nieprawidłowe parametry zapytania
       content:
         application/json:
@@ -71,7 +71,7 @@ get:
               message:
                 type: string
                 example: "Invalid filter format"
-    '500':
+    "500":
       description: Błąd serwera
       content:
         application/json:
@@ -80,4 +80,4 @@ get:
             properties:
               message:
                 type: string
-                example: "Internal server error" 
+                example: "Internal server error"

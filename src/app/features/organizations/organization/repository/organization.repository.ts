@@ -65,11 +65,6 @@ export const createOrganization = async (data: ICreateOrganizationPayload) => {
       website: data.website,
       settings: data.settings ? (data.settings as Prisma.InputJsonValue) : undefined,
       active: data.active,
-      OrganizationOwner: {
-        create: {
-          userId: existingOwner.id,
-        },
-      },
     },
   });
 
@@ -89,27 +84,11 @@ const addOrganizationOwners = async (organizationId: number, ownerPublicIds: str
     ownerPublicIds.map(async publicId => {
       const user = await prisma.user.findUnique({
         where: { public_id: publicId },
-        include: {
-          OrganizationOwner: {
-            where: { organizationId },
-          },
-        },
       });
 
       if (!user) {
         throw new BadRequestError(`User not found`);
       }
-
-      if (user.OrganizationOwner.length > 0) {
-        throw new BadRequestError(`User is already a owner of this organization`);
-      }
-
-      await prisma.organizationOwner.create({
-        data: {
-          organizationId,
-          userId: user.id,
-        },
-      });
     }),
   );
 };
@@ -119,29 +98,11 @@ const removeOrganizationOwners = async (organizationId: number, ownerPublicIds: 
     ownerPublicIds.map(async publicId => {
       const user = await prisma.user.findUnique({
         where: { public_id: publicId },
-        include: {
-          OrganizationOwner: {
-            where: { organizationId },
-          },
-        },
       });
 
       if (!user) {
         throw new BadRequestError(`User not found`);
       }
-
-      if (user.OrganizationOwner.length === 0) {
-        throw new BadRequestError(`User is not a owner of this organization`);
-      }
-
-      await prisma.organizationOwner.delete({
-        where: {
-          organizationId_userId: {
-            organizationId,
-            userId: user.id,
-          },
-        },
-      });
     }),
   );
 };
@@ -149,9 +110,6 @@ const removeOrganizationOwners = async (organizationId: number, ownerPublicIds: 
 export const updateOrganization = async (data: IEditOrganizationPayload) => {
   const organization = await prisma.organization.findUnique({
     where: { public_id: data.publicId },
-    include: {
-      OrganizationOwner: true,
-    },
   });
 
   if (!organization) {

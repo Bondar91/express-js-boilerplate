@@ -14,14 +14,20 @@ paths:
 
   /organizations:
     get:
-      $ref: "paths/organizations/list.yaml#/get"
+      $ref: "paths/organizations/organization/list.yaml#/get"
     post:
-      $ref: "paths/organizations/create.yaml#/post"
+      $ref: "paths/organizations/organization/create.yaml#/post"
   /organizations/{publicId}:
     get:
-      $ref: "paths/organizations/get.yaml#/get"
+      $ref: "paths/organizations/organization/get.yaml#/get"
     patch:
-      $ref: "paths/organizations/edit.yaml#/patch"
+      $ref: "paths/organizations/organization/edit.yaml#/patch"
+
+  /organizations/{organizationId}/members:
+    get:
+      $ref: "paths/organizations/member/list.yaml#/get"
+    post:
+      $ref: "paths/organizations/member/create.yaml#/post"
 
   /users:
     get:

@@ -4,7 +4,7 @@ import type { QueryBus } from '@/lib/cqrs/query-bus';
 import { createOrganizationAction } from './actions/create-organization.action';
 import { editOrganizationAction } from './actions/edit-organization.action';
 import { listOrganizationsAction } from './actions/list-organizations.action';
-import { authMiddleware } from '../auth/middleware/auth.middleware';
+import { authMiddleware } from '../../auth/middleware/auth.middleware';
 import {
   createOrganizationActionValidation,
   editOrganizationActionValidation,
