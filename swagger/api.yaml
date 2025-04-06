@@ -34,6 +34,10 @@ paths:
     put:
       $ref: "paths/organizations/member/edit.yaml#/put"
 
+  /organizations/{organizationId}/teams:
+    post:
+      $ref: "paths/organizations/team/create.yaml#/post"
+
   /users:
     get:
       $ref: "paths/users/list.yaml#/get"
