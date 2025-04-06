@@ -37,6 +37,8 @@ paths:
   /organizations/{organizationId}/teams:
     post:
       $ref: "paths/organizations/team/create.yaml#/post"
+    get:
+      $ref: "paths/organizations/team/list.yaml#/get"
 
   /users:
     get:

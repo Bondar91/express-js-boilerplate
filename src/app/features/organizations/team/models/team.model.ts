@@ -7,3 +7,28 @@ export interface ICreateTeamPayload {
   name: string;
   description?: string;
 }
+
+export type TMemberUserData = {
+  public_id: string;
+  name: string;
+  surname: string;
+  email: string;
+};
+
+export type TTeamRaw = TTeam & {
+  members: {
+    public_id: string;
+    role: string | null;
+    member: {
+      public_id: string;
+      user: TMemberUserData;
+    };
+  }[];
+};
+
+export type TTeamQueryResult = {
+  id: string;
+  name: string;
+  description: string | null;
+  members: Omit<TMemberUserData, 'public_id'>[];
+};

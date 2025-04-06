@@ -20,7 +20,7 @@ export const createOrganizationsRouting = ({ commandBus, queryBus }: IOrganizati
   router.use('/:organizationId/members', createMemberRouting({ commandBus, queryBus }));
 
   /** Teams routes **/
-  router.use('/:organizationId/teams', createTeamRouting({ commandBus }));
+  router.use('/:organizationId/teams', createTeamRouting({ commandBus, queryBus }));
 
   return router;
 };

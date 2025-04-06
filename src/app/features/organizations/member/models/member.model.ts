@@ -26,6 +26,7 @@ export interface ICreateMemberRolePayload {
 }
 
 export type TMemberResponse = Pick<TMember, 'public_id' | 'status'> & {
+  id: string;
   name: string;
   surname: string;
   email: string;
