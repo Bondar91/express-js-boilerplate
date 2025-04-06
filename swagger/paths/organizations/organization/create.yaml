@@ -58,34 +58,22 @@ post:
       content:
         application/json:
           schema:
-            $ref: "../../schemas/common/response.yaml"
+            $ref: "../../../schemas/common/response.yaml"
     "400":
       description: Nieprawidłowe dane
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: "This slug already exists"
+            $ref: "../../../schemas/common/error-400.yaml"
     "404":
-      description: Nie znaleziono właściciela
+      description: Nie znaleziono członka
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: "Owner with this id not found"
+            $ref: "../../../schemas/common/error-default.yaml"
     "500":
       description: Błąd serwera
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: "Internal server error"
+            $ref: "../../../schemas/common/error-default.yaml"

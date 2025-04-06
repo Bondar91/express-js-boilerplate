@@ -10,21 +10,8 @@ export class CreateOrganizationHandler implements ICommandHandler<CreateOrganiza
   public commandType = 'CREATE_ORGANIZATION';
 
   public async execute(command: CreateOrganizationCommand): Promise<TOrganization> {
-    const {
-      name,
-      slug,
-      type,
-      address,
-      city,
-      postalCode,
-      country,
-      phone,
-      email,
-      website,
-      settings,
-      active,
-      ownerPublicId,
-    } = command.payload;
+    const { name, slug, type, address, city, postalCode, country, phone, email, website, settings, active, memberId } =
+      command.payload;
 
     let slugToUse;
 
@@ -50,7 +37,7 @@ export class CreateOrganizationHandler implements ICommandHandler<CreateOrganiza
       website,
       settings,
       active,
-      ownerPublicId,
+      memberId,
     };
 
     const newOrganizationDb = await createOrganization(newOrganization);

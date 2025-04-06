@@ -46,6 +46,12 @@ post:
         application/json:
           schema:
             $ref: "../../../schemas/common/error-default.yaml"
+    "409":
+      description: Uytkownik o takim adresie email ju istnieje
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-409.yaml"
     "500":
       description: Błąd serwera
       content:

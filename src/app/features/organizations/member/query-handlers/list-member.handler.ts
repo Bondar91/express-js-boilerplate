@@ -3,14 +3,17 @@ import type { ListMemberQuery } from '../queries/list-member.query';
 import type { IPaginationResult } from '@/shared/pagination-utils/pagination-utils';
 import { makePaginationResult } from '@/shared/pagination-utils/pagination-utils';
 import { listMember } from '../repository/member.repository';
-import type { TMemberResponse } from '../models/member.model';
+import type { TMemberQueryResult } from '../models/member.model';
 import { memberPaginationOptions } from '../../config/pagination.config';
+import { transformMemberResponse } from '../transformers/member.transformer';
 
-export class ListMemberHandler implements IQueryHandler<ListMemberQuery, IPaginationResult<TMemberResponse>> {
+export class ListMemberHandler implements IQueryHandler<ListMemberQuery, IPaginationResult<TMemberQueryResult>> {
   public queryType = 'LIST_MEMBER';
 
-  public async execute(query: ListMemberQuery): Promise<IPaginationResult<TMemberResponse>> {
-    const [items, total] = await listMember(query.params);
-    return makePaginationResult(items, total, query.params, memberPaginationOptions);
+  public async execute(query: ListMemberQuery): Promise<IPaginationResult<TMemberQueryResult>> {
+    const [members, total] = await listMember(query.params);
+    const transformedMembers = members.map(member => transformMemberResponse(member));
+
+    return makePaginationResult(transformedMembers, total, query.params, memberPaginationOptions);
   }
 }

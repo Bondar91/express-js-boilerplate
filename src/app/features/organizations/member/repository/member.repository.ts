@@ -1,78 +1,254 @@
+import type { TPrismaClientOrTransaction } from '@/config/db';
 import { prisma } from '@/config/db';
-import type { ICreateMemberPayload, TMemberResponse } from '../models/member.model';
+import type {
+  ICreateMemberPayload,
+  ICreateMemberRolePayload,
+  ICreateOrganizationMemeberPayload,
+  IUpdateMemberPayload,
+  TAddMemberRole,
+  TMemberRaw,
+  TMemberUpdateData,
+} from '../models/member.model';
 import type { Prisma } from '@prisma/client';
 import { MembershipStatus } from '@prisma/client';
-import { BadRequestError } from '@/errors/bad-request.error';
+
 import type { IPaginationParamsDto } from '@/shared/pagination-utils/pagination-utils';
 import { calculateSkip, createOrderBy, createWhereInput } from '@/shared/pagination-utils/pagination-utils';
 import { memberPaginationOptions } from '../../config/pagination.config';
+import { NotFoundError } from '@/errors/not-found.error';
+import { hasSuperAdminRole } from '@/shared/role-utils/role-utils';
+import { createUser, findUserByEmail, updateUser } from '@/app/features/user/repository/user.repository';
+import { findOrganizationByPublicId } from '../../organization/repository/organization.repository';
+import { findRoleByPublicId, findRolesByPublicIds } from '@/app/features/system-role/repository/system-role.repository';
+import type { TSystemRole } from '@/app/features/system-role/models/system-role.model';
+import { ConflictError } from '@/errors/conflict.error';
+
+const selectMemberWithUserAndRoles = {
+  user: {
+    select: {
+      public_id: true,
+      name: true,
+      surname: true,
+      email: true,
+    },
+  },
+  roles: {
+    select: {
+      role: {
+        select: {
+          name: true,
+          public_id: true,
+        },
+      },
+    },
+  },
+} as const;
 
 export const createMember = async (data: ICreateMemberPayload) => {
   return prisma.$transaction(async tx => {
-    let user = await tx.user.findUnique({
-      where: { email: data.email },
-    });
+    let user = await findUserByEmail(data.email, tx);
 
-    if (!user) {
-      user = await tx.user.create({
-        data: {
-          name: data.name,
-          surname: data.surname,
-          email: data.email,
-        },
-      });
+    if (user) {
+      throw new ConflictError('Member with this email already exists');
     }
 
-    const organization = await tx.organization.findUnique({
-      where: { public_id: data.organizationId },
-    });
+    user = await createUser(
+      {
+        name: data.name,
+        surname: data.surname,
+        email: data.email,
+      },
+      tx,
+    );
 
-    if (!organization) {
-      throw new BadRequestError('Organization not found');
-    }
+    const organization = await findOrganizationByPublicId(data.organizationId, tx);
 
-    const member = await tx.organizationMember.create({
-      data: {
+    const member = await createOrganizationMember(
+      {
         userId: user.id,
         organizationId: organization.id,
-        status: data.status || MembershipStatus.PENDING,
-        statusChangedAt: new Date(),
-        statusChangedBy: data.addedBy ? parseInt(data.addedBy) : null,
-        isSuperAdmin: false,
+        status: data.status,
+        addedBy: data.addedBy,
       },
-      include: {
-        user: {
-          select: {
-            public_id: true,
-            name: true,
-            surname: true,
-            email: true,
-          },
-        },
-      },
-    });
+      tx,
+    );
 
-    const role = await tx.systemRole.findUnique({
-      where: { public_id: data.roleId },
-    });
+    const role = await findRoleByPublicId(data.roleId, tx);
 
-    if (!role) {
-      throw new BadRequestError('Role not found');
-    }
-
-    await tx.memberRole.create({
-      data: {
+    await createMemberRole(
+      {
         memberId: member.id,
         roleId: role.id,
-        assignedBy: data.addedBy ? parseInt(data.addedBy) : null,
+        addedBy: data.addedBy,
       },
-    });
+      tx,
+    );
 
     return member;
   });
 };
 
-export const listMember = async (params: IPaginationParamsDto): Promise<[TMemberResponse[], number]> => {
+export const createOrganizationMember = async (
+  data: ICreateOrganizationMemeberPayload,
+  client: TPrismaClientOrTransaction = prisma,
+) => {
+  return await client.organizationMember.create({
+    data: {
+      userId: data.userId,
+      organizationId: data.organizationId,
+      status: data.status || MembershipStatus.PENDING,
+      statusChangedAt: new Date(),
+      statusChangedBy: data.addedBy ? parseInt(data.addedBy) : null,
+      isSuperAdmin: false,
+    },
+  });
+};
+
+export const createMemberRole = async (data: ICreateMemberRolePayload, client: TPrismaClientOrTransaction = prisma) => {
+  return await client.memberRole.create({
+    data: {
+      memberId: data.memberId,
+      roleId: data.roleId,
+      assignedBy: data.addedBy ? parseInt(data.addedBy) : null,
+    },
+  });
+};
+
+export const updateMember = async (data: IUpdateMemberPayload) => {
+  return prisma.$transaction(async tx => {
+    const member = await findMemberByPublicId(data.memberId);
+
+    if (data.name || data.surname || data.email) {
+      await updateUser(
+        member.user.public_id,
+        {
+          name: data.name,
+          surname: data.surname,
+          email: data.email,
+        },
+        tx,
+      );
+    }
+
+    const memberUpdateData: TMemberUpdateData = {};
+
+    if (data.status) {
+      memberUpdateData.status = data.status;
+      memberUpdateData.statusChangedAt = new Date();
+      memberUpdateData.statusChangedBy = data.updatedBy ? parseInt(data.updatedBy) : null;
+    }
+
+    const memberUpdateDataNew = updateMemberDataBasedOnRoles(memberUpdateData, data.roles.add);
+
+    if (Object.keys(memberUpdateData).length > 0) {
+      await tx.organizationMember.update({
+        where: { id: member.id },
+        data: memberUpdateDataNew,
+      });
+    }
+
+    if (data.roles) {
+      const existingRoles = await findRolesByMemberId(member.id, tx);
+
+      if (data.roles.add && data.roles.add.length > 0) {
+        const newRoles = await findRolesByPublicIds(data.roles.add, tx);
+
+        if (newRoles.length !== data.roles.add.length) {
+          throw new NotFoundError('One or more roles to add not found');
+        }
+
+        const existingRoleIds = existingRoles.map(memberRole => memberRole.roleId);
+        const rolesToAdd = newRoles.filter(role => !existingRoleIds.includes(role.id));
+
+        for (const role of rolesToAdd) {
+          await createMemberRole(
+            {
+              memberId: member.id,
+              roleId: role.id,
+              addedBy: data.updatedBy,
+            },
+            tx,
+          );
+        }
+      }
+
+      if (data.roles.remove && data.roles.remove.length > 0) {
+        const rolesToRemove = await findRolesByPublicIds(data.roles.remove);
+
+        if (rolesToRemove.length !== data.roles.remove.length) {
+          throw new NotFoundError('One or more roles to remove not found');
+        }
+
+        const roleIdsToRemove = rolesToRemove.map(role => role.id);
+        const rolesToDelete = existingRoles.filter(memberRole => roleIdsToRemove.includes(memberRole.roleId));
+
+        if (rolesToDelete.length > 0) {
+          const extractedRolesToDelete = rolesToDelete.map(({ role }) => role);
+          await deleteMemberRoles(extractedRolesToDelete, tx);
+        }
+      }
+    }
+
+    return member;
+  });
+};
+
+const updateMemberDataBasedOnRoles = <T extends { isSuperAdmin?: boolean }>(
+  memberUpdateData: T,
+  roles: string[],
+): T => {
+  if (roles && roles.length > 0) {
+    memberUpdateData.isSuperAdmin = hasSuperAdminRole(roles);
+  }
+
+  return memberUpdateData;
+};
+
+export const findMemberByOrganizationAndUser = async (
+  organizationId: number,
+  userId: number,
+  client: TPrismaClientOrTransaction = prisma,
+) => {
+  return client.organizationMember.findFirst({
+    where: { organizationId, userId },
+  });
+};
+
+export const deleteOrganizationMembers = async (organizationId: number, userId: number) => {
+  return await prisma.organizationMember.deleteMany({
+    where: {
+      organizationId,
+      userId,
+    },
+  });
+};
+
+export const deleteMemberRoles = async (rolesToDelete: TSystemRole[], client: TPrismaClientOrTransaction = prisma) => {
+  return await client.memberRole.deleteMany({
+    where: {
+      roleId: { in: rolesToDelete.map(role => role.id) },
+    },
+  });
+};
+
+export const addMemberRoles = async (data: TAddMemberRole, client: TPrismaClientOrTransaction = prisma) => {
+  return await client.memberRole.create({
+    data: {
+      memberId: data.memberId,
+      roleId: data.roleId,
+      assignedBy: data.assignedBy ?? null,
+    },
+  });
+};
+
+export const findRolesByMemberId = async (memberId: number, client: TPrismaClientOrTransaction = prisma) => {
+  return await client.memberRole.findMany({
+    where: { memberId },
+    include: { role: true },
+  });
+};
+
+export const listMember = async (params: IPaginationParamsDto): Promise<[TMemberRaw[], number]> => {
   let where = createWhereInput(params.filter, undefined, []);
   where = applyRolesFilter(where, params.filter);
   where = applyUserSearch(where, params.search, memberPaginationOptions.searchFields);
@@ -86,41 +262,12 @@ export const listMember = async (params: IPaginationParamsDto): Promise<[TMember
       orderBy,
       skip: calculateSkip(page, limit),
       take: limit,
-      select: {
-        public_id: true,
-        status: true,
-        user: {
-          select: {
-            name: true,
-            surname: true,
-            email: true,
-          },
-        },
-        roles: {
-          select: {
-            role: {
-              select: {
-                name: true,
-                public_id: true,
-              },
-            },
-          },
-        },
-      },
+      include: selectMemberWithUserAndRoles,
     }),
     prisma.organizationMember.count({ where }),
   ]);
 
-  const formattedMembers = members.map(member => ({
-    public_id: member.public_id,
-    name: member.user.name,
-    surname: member.user.surname,
-    email: member.user.email,
-    status: member.status,
-    roles: member.roles.map(role => role.role.name),
-  }));
-
-  return [formattedMembers, total];
+  return [members, total];
 };
 
 const applyRolesFilter = (
@@ -179,4 +326,17 @@ const applyUserSearch = (
     ...where,
     OR,
   };
+};
+
+export const findMemberByPublicId = async (publicId: string, client: TPrismaClientOrTransaction = prisma) => {
+  const member = await client.organizationMember.findUnique({
+    where: { public_id: publicId },
+    include: selectMemberWithUserAndRoles,
+  });
+
+  if (!member) {
+    throw new NotFoundError('Member not found');
+  }
+
+  return member;
 };

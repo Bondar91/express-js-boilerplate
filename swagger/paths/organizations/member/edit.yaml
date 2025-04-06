@@ -1,15 +1,22 @@
-patch:
+put:
   tags:
-    - Organizations
-  summary: Edytuj organizację
-  description: Edytuje dane istniejącej organizacji
+    - Members
+  summary: Edytuj członka
+  description: Edytuje dane istniejącej członka
   parameters:
     - in: path
-      name: publicId
+      name: organizationId
       required: true
       schema:
         type: string
       description: Publiczny identyfikator organizacji
+      example: "org_123456"
+    - in: path
+      name: memberId
+      required: true
+      schema:
+        type: string
+      description: Publiczny identyfikator członka
       example: "org_123456"
   requestBody:
     required: true
@@ -20,56 +27,34 @@ patch:
           properties:
             name:
               type: string
-              example: "Akademia Sportowa Orły"
-            slug:
+              example: "Jan"
+            surname:
               type: string
-              example: "akademia-sportowa-orly"
-            type:
+              example: "Kowalski"
+            email:
               type: string
               enum: ["CLUB", "ASSOCIATION", "FEDERATION"]
               example: "CLUB"
-            address:
+            status:
               type: string
-              example: "ul. Sportowa 1"
-            city:
-              type: string
-              example: "Warszawa"
-            postalCode:
-              type: string
-              example: "00-001"
-            country:
-              type: string
-              example: "PL"
-            phone:
-              type: string
-              example: "+48123456789"
-            email:
-              type: string
-              example: "kontakt@orly.pl"
-            website:
-              type: string
-              example: "https://orly.pl"
-            settings:
-              type: object
-            active:
-              type: boolean
-              example: true
-            owners:
+              enum: ["PENDING", "ACTIVE", "SUSPENDED", "INACTIVE", "BLOCKED"]
+              example: "ACTIVE"
+            roles:
               type: object
               properties:
                 add:
                   type: array
                   items:
                     type: string
-                  example: ["usr_123456", "usr_789012"]
+                  example: ["role_123456", "role_789012"]
                 remove:
                   type: array
                   items:
                     type: string
-                  example: ["usr_345678"]
+                  example: ["role_345678"]
   responses:
     "200":
-      description: Organizacja została zaktualizowana
+      description: Członek została zaktualizowana
       content:
         application/json:
           schema:
@@ -86,6 +71,12 @@ patch:
         application/json:
           schema:
             $ref: "../../../schemas/common/error-default.yaml"
+    "409":
+      description: Uytkownik o takim adresie email ju istnieje
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-409.yaml"
     "500":
       description: Błąd serwera
       content:

@@ -4,15 +4,18 @@ import type { IPaginationResult } from '@/shared/pagination-utils/pagination-uti
 import { listOrganizations } from '../repository/organization.repository';
 import { makePaginationResult } from '@/shared/pagination-utils/pagination-utils';
 import { organizationPaginationOptions } from '../config/pagination.config';
-import type { TOrganizationResponse } from '../models/organization.models';
+import type { TOrganizationQueryResult } from '../models/organization.models';
+import { transformOrganizationResponse } from '../transformers/organization.transformer';
 
 export class ListOrganizationsHandler
-  implements IQueryHandler<ListOrganizationsQuery, IPaginationResult<TOrganizationResponse>>
+  implements IQueryHandler<ListOrganizationsQuery, IPaginationResult<TOrganizationQueryResult>>
 {
   public queryType = 'LIST_ORGANIZATIONS';
 
-  public async execute(query: ListOrganizationsQuery): Promise<IPaginationResult<TOrganizationResponse>> {
-    const [items, total] = await listOrganizations(query.params);
-    return makePaginationResult(items, total, query.params, organizationPaginationOptions);
+  public async execute(query: ListOrganizationsQuery): Promise<IPaginationResult<TOrganizationQueryResult>> {
+    const [organizations, total] = await listOrganizations(query.params);
+    const transformedOrganizations = organizations.map(organization => transformOrganizationResponse(organization));
+
+    return makePaginationResult(transformedOrganizations, total, query.params, organizationPaginationOptions);
   }
 }

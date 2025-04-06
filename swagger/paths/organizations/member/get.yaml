@@ -1,23 +1,30 @@
 get:
   tags:
-    - Organizations
-  summary: Pobierz organizację
-  description: Pobiera szczegółowe informacje o konkretnej organizacji
+    - Members
+  summary: Pobierz członka
+  description: Pobiera szczegółowe informacje o konkretnym członku
   parameters:
     - in: path
-      name: publicId
+      name: organizationId
       required: true
       schema:
         type: string
       description: Publiczny identyfikator organizacji
       example: "org_123456"
+    - in: path
+      name: memberId
+      required: true
+      schema:
+        type: string
+      description: Publiczny identyfikator członka
+      example: "org_123456"
   responses:
     "200":
-      description: Pomyślnie pobrano szczegóły organizacji
+      description: Pomyślnie pobrano szczegóły członka
       content:
         application/json:
           schema:
-            $ref: "../../../schemas/organizations/organization/organization.yaml"
+            $ref: "../../../schemas/organizations/member/member.yaml"
     "400":
       description: Nieprawidłowe dane
       content:

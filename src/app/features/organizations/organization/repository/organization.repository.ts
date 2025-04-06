@@ -1,9 +1,9 @@
+import type { TPrismaClientOrTransaction } from '@/config/db';
 import { prisma } from '@/config/db';
 import type {
   ICreateOrganizationPayload,
   IEditOrganizationPayload,
-  TOrganizationResponse,
-  TOrganizationWithOwners,
+  TOrganizationRaw,
 } from '../models/organization.models';
 import { BadRequestError } from '@/errors/bad-request.error';
 import type { Prisma } from '@prisma/client';
@@ -11,24 +11,15 @@ import { NotFoundError } from '@/errors/not-found.error';
 import type { IPaginationParamsDto } from '@/shared/pagination-utils/pagination-utils';
 import { createWhereInput, createOrderBy, calculateSkip } from '@/shared/pagination-utils/pagination-utils';
 import { organizationPaginationOptions } from '../config/pagination.config';
+import { findUserByPublicId } from '@/app/features/user/repository/user.repository';
+import {
+  createOrganizationMember,
+  deleteOrganizationMembers,
+  findMemberByOrganizationAndUser,
+} from '../../member/repository/member.repository';
 
-const organizationSelect = {
-  public_id: true,
-  name: true,
-  slug: true,
-  type: true,
-  address: true,
-  city: true,
-  postalCode: true,
-  country: true,
-  phone: true,
-  email: true,
-  website: true,
-  settings: true,
-  active: true,
-  createdAt: true,
-  updatedAt: true,
-  OrganizationOwner: {
+const selectOrganizationWithMember = {
+  OrganizationMember: {
     select: {
       user: {
         select: {
@@ -43,13 +34,7 @@ const organizationSelect = {
 } as const;
 
 export const createOrganization = async (data: ICreateOrganizationPayload) => {
-  const existingOwner = await prisma.user.findUnique({
-    where: { public_id: data.ownerPublicId },
-  });
-
-  if (!existingOwner) {
-    throw new BadRequestError('Owner with this id not found');
-  }
+  await findUserByPublicId(data.memberId);
 
   const organization = await prisma.organization.create({
     data: {
@@ -71,7 +56,7 @@ export const createOrganization = async (data: ICreateOrganizationPayload) => {
   return organization;
 };
 
-export const slugExists = async (slug: string): Promise<boolean> => {
+export const slugExists = async (slug: string) => {
   const count = await prisma.organization.count({
     where: { slug },
   });
@@ -79,44 +64,10 @@ export const slugExists = async (slug: string): Promise<boolean> => {
   return count > 0;
 };
 
-const addOrganizationOwners = async (organizationId: number, ownerPublicIds: string[]) => {
-  await Promise.all(
-    ownerPublicIds.map(async publicId => {
-      const user = await prisma.user.findUnique({
-        where: { public_id: publicId },
-      });
-
-      if (!user) {
-        throw new BadRequestError(`User not found`);
-      }
-    }),
-  );
-};
-
-const removeOrganizationOwners = async (organizationId: number, ownerPublicIds: string[]) => {
-  await Promise.all(
-    ownerPublicIds.map(async publicId => {
-      const user = await prisma.user.findUnique({
-        where: { public_id: publicId },
-      });
-
-      if (!user) {
-        throw new BadRequestError(`User not found`);
-      }
-    }),
-  );
-};
-
 export const updateOrganization = async (data: IEditOrganizationPayload) => {
-  const organization = await prisma.organization.findUnique({
-    where: { public_id: data.publicId },
-  });
+  const organization = await findOrganizationByPublicId(data.publicId);
 
-  if (!organization) {
-    throw new NotFoundError('Organization not found');
-  }
-
-  const { publicId, owners, ...updateData } = data;
+  const { publicId, members, ...updateData } = data;
 
   if (updateData.slug && updateData.slug !== organization.slug) {
     if (await slugExists(updateData.slug)) {
@@ -129,29 +80,47 @@ export const updateOrganization = async (data: IEditOrganizationPayload) => {
     data: updateData,
   });
 
-  if (owners) {
-    if (owners.add) {
-      await addOrganizationOwners(organization.id, owners.add);
+  if (members) {
+    if (members.add) {
+      await addOrganizationMembers(organization.id, members.add);
     }
-    if (owners.remove) {
-      await removeOrganizationOwners(organization.id, owners.remove);
+    if (members.remove) {
+      await removeOrganizationMembers(organization.id, members.remove);
     }
   }
 
   return organizationUpdate;
 };
 
-const transformOrganizationResponse = (organization: TOrganizationWithOwners): TOrganizationResponse => {
-  const { OrganizationOwner, ...rest } = organization;
-  return {
-    ...rest,
-    owners: OrganizationOwner.map(owner => ({
-      ...owner.user,
-    })),
-  };
+const addOrganizationMembers = async (organizationId: number, memberIds: string[]) => {
+  await Promise.all(
+    memberIds.map(async publicId => {
+      const user = await findUserByPublicId(publicId);
+
+      const existingMember = await findMemberByOrganizationAndUser(organizationId, user.id);
+
+      if (!existingMember) {
+        await createOrganizationMember({
+          userId: user.id,
+          organizationId,
+          status: 'ACTIVE',
+        });
+      }
+    }),
+  );
 };
 
-export const listOrganizations = async (params: IPaginationParamsDto): Promise<[TOrganizationResponse[], number]> => {
+const removeOrganizationMembers = async (organizationId: number, memberIds: string[]) => {
+  await Promise.all(
+    memberIds.map(async publicId => {
+      const user = await findUserByPublicId(publicId);
+
+      await deleteOrganizationMembers(organizationId, user.id);
+    }),
+  );
+};
+
+export const listOrganizations = async (params: IPaginationParamsDto): Promise<[TOrganizationRaw[], number]> => {
   const where = createWhereInput(params.filter, params.search, organizationPaginationOptions.searchFields);
   const orderBy = createOrderBy(params.sort);
 
@@ -164,25 +133,23 @@ export const listOrganizations = async (params: IPaginationParamsDto): Promise<[
       orderBy,
       skip: calculateSkip(page, limit),
       take: limit,
-      select: organizationSelect,
+      include: selectOrganizationWithMember,
     }),
     prisma.organization.count({ where }),
   ]);
 
-  const transformedOrganizations = organizations.map(transformOrganizationResponse);
-
-  return [transformedOrganizations, total];
+  return [organizations, total];
 };
 
-export const findOrganizationByPublicId = async (publicId: string): Promise<TOrganizationResponse> => {
-  const organization = await prisma.organization.findUnique({
+export const findOrganizationByPublicId = async (publicId: string, client: TPrismaClientOrTransaction = prisma) => {
+  const organization = await client.organization.findUnique({
     where: { public_id: publicId },
-    select: organizationSelect,
+    include: selectOrganizationWithMember,
   });
 
   if (!organization) {
     throw new NotFoundError('Organization not found');
   }
 
-  return transformOrganizationResponse(organization);
+  return organization;
 };

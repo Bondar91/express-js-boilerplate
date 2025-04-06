@@ -22,7 +22,7 @@ export class EditOrganizationHandler implements ICommandHandler<EditOrganization
       website,
       settings,
       active,
-      owners,
+      members,
     } = command.payload;
 
     const updatedOrganization = await updateOrganization({
@@ -39,7 +39,7 @@ export class EditOrganizationHandler implements ICommandHandler<EditOrganization
       website,
       settings,
       active,
-      owners,
+      members,
     });
 
     return updatedOrganization;

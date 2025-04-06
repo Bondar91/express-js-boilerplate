@@ -1,8 +1,8 @@
 type: object
 properties:
-  public_id:
+  id:
     type: string
-    example: "org_123456"
+    example: "8fe8d8bd-c9ab-4b86-b4de-18022bcdca23"
   name:
     type: string
     example: "Sports Club Warsaw"
@@ -52,20 +52,20 @@ properties:
   updatedAt:
     type: string
     format: date-time
-  owners:
+  members:
     type: array
     items:
       type: object
       properties:
-        public_id:
+        id:
           type: string
-          example: "235335-fsdgds-532532"
+          example: "8fe8d8bd-c9ab-4b86-b4de-18022bcdca23"
         name:
           type: string
-          example: "Admin"
+          example: "Jan"
         surname:
           type: string
-          example: "Leader"
+          example: "Kowalski"
         email:
           type: string
-          example: "admin2@example.com"
+          example: "jan.kowalski@example.com"

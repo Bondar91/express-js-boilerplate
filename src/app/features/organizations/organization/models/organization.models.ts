@@ -16,33 +16,36 @@ export interface ICreateOrganizationPayload {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   settings?: Record<string, any>;
   active?: boolean;
-  ownerPublicId: string;
+  memberId: string;
 }
 
-export interface IOrganizationOwners {
+export interface IOrganizationMembers {
   add?: string[];
   remove?: string[];
 }
 
-export interface IEditOrganizationPayload extends Omit<ICreateOrganizationPayload, 'ownerPublicId'> {
+export interface IEditOrganizationPayload extends Omit<ICreateOrganizationPayload, 'memberId'> {
   publicId: string;
-  owners?: IOrganizationOwners;
+  members?: IOrganizationMembers;
 }
 
-export type TOrganizationWithOwners = {
-  OrganizationOwner: {
-    user: {
-      public_id: string;
-      name: string;
-      surname: string;
-      email: string;
-    };
-  }[];
-} & Omit<TOrganizationResponse, 'owners'>;
-
-export type TOrganizationResponse = Omit<TOrganization, 'id'> & {
-  owners: {
+export type TMemberUserData = {
+  user: {
     public_id: string;
+    name: string;
+    surname: string;
+    email: string;
+  };
+};
+
+export type TOrganizationRaw = TOrganization & {
+  OrganizationMember: TMemberUserData[];
+};
+
+export type TOrganizationQueryResult = Omit<TOrganization, 'id' | 'public_id'> & {
+  id: string;
+  members: {
+    id: string;
     name: string;
     surname: string;
     email: string;

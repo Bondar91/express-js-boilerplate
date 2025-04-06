@@ -16,7 +16,7 @@ export const createOrganizationAction = (commandBus: CommandBus) => {
         throw new BadRequestError('User not authenticated');
       }
 
-      const ownerPublicId = req.user?.publicId;
+      const memberId = req.user?.publicId;
 
       await commandBus.execute<CreateOrganizationCommand, TOrganization>(
         new CreateOrganizationCommand({
@@ -32,7 +32,7 @@ export const createOrganizationAction = (commandBus: CommandBus) => {
           website,
           settings,
           active,
-          ownerPublicId,
+          memberId,
         }),
       );
 

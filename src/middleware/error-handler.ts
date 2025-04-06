@@ -5,12 +5,14 @@ import { AppError } from '../errors/app.error';
 import { HttpError } from '../errors/http.error';
 import { BadRequestError } from '../errors/bad-request.error';
 import { type CelebrateError, isCelebrateError } from 'celebrate';
+import { ConflictError } from '@/errors/conflict.error';
 
 export enum ERROR_CODE {
   VALIDATION_PARSE = 'error.validation.parse',
   BAD_REQUEST = 'error.bad_request',
   HTTP = 'error.http',
   APP = 'error.app',
+  CONFLICT = 'error.conflict',
   UNKNOWN = 'error.unknown',
 }
 
@@ -57,6 +59,12 @@ export const errorHandler: ErrorRequestHandler = (
     case err instanceof HttpError:
       res.status(err.status).json({
         error: { code: ERROR_CODE.HTTP, message: err.message },
+      });
+      return;
+
+    case err instanceof ConflictError:
+      res.status(err.status).json({
+        error: { code: ERROR_CODE.CONFLICT, message: err.message },
       });
       return;
 
