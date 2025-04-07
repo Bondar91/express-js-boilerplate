@@ -1,5 +1,6 @@
+import type { TPrismaClientOrTransaction } from '@/config/db';
 import { prisma } from '@/config/db';
-import type { ICreateTeamPayload, IEditTeamPayload, TTeamRaw } from '../models/team.model';
+import type { IAssignTeamMemberPayload, ICreateTeamPayload, IEditTeamPayload, TTeamRaw } from '../models/team.model';
 import { findOrganizationByPublicId } from '../../organization/repository/organization.repository';
 import {
   calculateSkip,
@@ -9,6 +10,8 @@ import {
 } from '@/shared/pagination-utils/pagination-utils';
 import { teamPaginationOptions } from '../config/pagination.config';
 import { NotFoundError } from '@/errors/not-found.error';
+import { findOrganizationMembers } from '../../member/repository/member.repository';
+import type { OrganizationMember } from '@prisma/client';
 
 const selectTeamWithMember = {
   members: {
@@ -92,4 +95,70 @@ export const updateTeam = async (data: IEditTeamPayload) => {
   });
 
   return team;
+};
+
+export const assignTeamMember = async (data: IAssignTeamMemberPayload) => {
+  const { organizationId, teamId, members } = data;
+  const team = await findTeamByPublicId(organizationId, teamId);
+
+  return prisma.$transaction(async tx => {
+    if (members.remove.length > 0) {
+      await deleteTeamMembers(team.id, members.remove, tx);
+    }
+
+    if (members.add.length > 0) {
+      const organizationMembers = await findOrganizationMembers(members.add, tx);
+      const existingMemberships = await findTeamMemberByPublicIds(team.id, organizationMembers, tx);
+
+      const existingMemberIds = new Set(existingMemberships.map(m => m.memberId));
+
+      await Promise.all(
+        organizationMembers
+          .filter(member => !existingMemberIds.has(member.id))
+          .map(member =>
+            tx.teamMember.create({
+              data: {
+                teamId: team.id,
+                memberId: member.id,
+              },
+            }),
+          ),
+      );
+    }
+  });
+};
+
+export const deleteTeamMembers = async (
+  teamId: number,
+  membersToRemove: string[],
+  client: TPrismaClientOrTransaction = prisma,
+) => {
+  return await client.teamMember.deleteMany({
+    where: {
+      teamId,
+      member: {
+        public_id: {
+          in: membersToRemove,
+        },
+      },
+    },
+  });
+};
+
+export const findTeamMemberByPublicIds = async (
+  teamId: number,
+  organizationMembers: OrganizationMember[],
+  client: TPrismaClientOrTransaction = prisma,
+) => {
+  return await client.teamMember.findMany({
+    where: {
+      teamId,
+      memberId: {
+        in: organizationMembers.map(member => member.id),
+      },
+    },
+    select: {
+      memberId: true,
+    },
+  });
 };

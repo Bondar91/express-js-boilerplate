@@ -44,6 +44,8 @@ paths:
       $ref: "paths/organizations/team/get.yaml#/get"
     put:
       $ref: "paths/organizations/team/edit.yaml#/put"
+    patch:
+      $ref: "paths/organizations/team/assign.yaml#/patch"
 
   /users:
     get:

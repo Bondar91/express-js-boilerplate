@@ -346,3 +346,11 @@ export const findMemberByPublicId = async (
 
   return member;
 };
+
+export const findOrganizationMembers = async (memberPublicIds: string[], client: TPrismaClientOrTransaction) => {
+  return await client.organizationMember.findMany({
+    where: {
+      public_id: { in: memberPublicIds },
+    },
+  });
+};

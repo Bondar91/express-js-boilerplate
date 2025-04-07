@@ -41,3 +41,12 @@ export interface IGetTeamParam {
 export interface IEditTeamPayload extends ICreateTeamPayload {
   teamId: string;
 }
+
+export interface IAssignTeamMemberPayload {
+  organizationId: string;
+  teamId: string;
+  members: {
+    add: string[];
+    remove: string[];
+  };
+}

@@ -86,3 +86,12 @@ export const findUsersByIds = async (ids: number[]) => {
     select: selectUser,
   });
 };
+
+export const findUsersByPublicIds = async (publicIds: string[]) => {
+  return await prisma.user.findMany({
+    where: {
+      public_id: { in: publicIds },
+    },
+    select: selectUser,
+  });
+};

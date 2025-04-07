@@ -1,0 +1,56 @@
+patch:
+  tags:
+    - Teams
+  summary: Przypisz lub usuń członków zespołu
+  description: przypisuje lub usuwwa członków zespołu
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            members:
+              type: object
+              properties:
+                add:
+                  type: array
+                  items:
+                    type: string
+                    description: "memberId"
+                    example:
+                      [
+                        "1adcf784-e8f9-43a2-b9e0-31d03f19afb9",
+                        "1adcf784-e8f9-43a2-b9e0-31d03f19afb9",
+                      ]
+                remove:
+                  type: array
+                  items:
+                    type: string
+                    description: "memberId"
+                    example: ["1adcf784-e8f9-43a2-b9e0-31d03f19afb9"]
+  responses:
+    "201":
+      description: Drużyna została utworzona
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/response.yaml"
+    "400":
+      description: Nieprawidłowe dane
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-400.yaml"
+    "404":
+      description: Nie znaleziono członka
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"
+    "500":
+      description: Błąd serwera
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"
