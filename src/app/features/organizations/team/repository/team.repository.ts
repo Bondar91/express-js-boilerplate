@@ -1,5 +1,5 @@
 import { prisma } from '@/config/db';
-import type { ICreateTeamPayload, TTeamRaw } from '../models/team.model';
+import type { ICreateTeamPayload, IEditTeamPayload, TTeamRaw } from '../models/team.model';
 import { findOrganizationByPublicId } from '../../organization/repository/organization.repository';
 import {
   calculateSkip,
@@ -76,6 +76,20 @@ export const findTeamByPublicId = async (organizationId: string, teamId: string)
   if (!team) {
     throw new NotFoundError('Team not found');
   }
+
+  return team;
+};
+
+export const updateTeam = async (data: IEditTeamPayload) => {
+  const organization = await findOrganizationByPublicId(data.organizationId);
+
+  const team = await prisma.team.update({
+    where: { organizationId: organization.id, public_id: data.teamId },
+    data: {
+      name: data.name,
+      description: data.description,
+    },
+  });
 
   return team;
 };

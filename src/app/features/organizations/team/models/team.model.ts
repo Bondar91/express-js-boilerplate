@@ -37,3 +37,7 @@ export interface IGetTeamParam {
   organizationId: string;
   teamId: string;
 }
+
+export interface IEditTeamPayload extends ICreateTeamPayload {
+  teamId: string;
+}

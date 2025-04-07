@@ -4,6 +4,7 @@ import { createTeamAction, createTeamActionValidation } from './actions/create-t
 import type { QueryBus } from '@/lib/cqrs/query-bus';
 import { listTeamAction, listTeamActionValidation } from './actions/list-team.action';
 import { getTeamAction, getTeamActionValidation } from './actions/get-team.action';
+import { editTeamAction, editTeamActionValidation } from './actions/edit-team.action';
 
 interface ITeamRouting {
   commandBus: CommandBus;
@@ -16,6 +17,7 @@ export const createTeamRouting = ({ commandBus, queryBus }: ITeamRouting) => {
   router.post('/', [createTeamActionValidation], createTeamAction(commandBus));
   router.get('/', [listTeamActionValidation], listTeamAction(queryBus));
   router.get('/:teamId', [getTeamActionValidation], getTeamAction(queryBus));
+  router.put('/:teamId', [editTeamActionValidation], editTeamAction(commandBus));
 
   return router;
 };
