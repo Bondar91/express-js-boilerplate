@@ -8,6 +8,7 @@ import {
   type IPaginationParamsDto,
 } from '@/shared/pagination-utils/pagination-utils';
 import { teamPaginationOptions } from '../config/pagination.config';
+import { NotFoundError } from '@/errors/not-found.error';
 
 const selectTeamWithMember = {
   members: {
@@ -59,4 +60,22 @@ export const listTeam = async (params: IPaginationParamsDto): Promise<[TTeamRaw[
   ]);
 
   return [teams, total];
+};
+
+export const findTeamByPublicId = async (organizationId: string, teamId: string) => {
+  const organization = await findOrganizationByPublicId(organizationId);
+
+  const team = await prisma.team.findUnique({
+    where: {
+      organizationId: organization.id,
+      public_id: teamId,
+    },
+    include: selectTeamWithMember,
+  });
+
+  if (!team) {
+    throw new NotFoundError('Team not found');
+  }
+
+  return team;
 };

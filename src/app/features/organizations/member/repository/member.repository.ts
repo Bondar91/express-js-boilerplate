@@ -116,7 +116,7 @@ export const createMemberRole = async (data: ICreateMemberRolePayload, client: T
 
 export const updateMember = async (data: IUpdateMemberPayload) => {
   return prisma.$transaction(async tx => {
-    const member = await findMemberByPublicId(data.memberId);
+    const member = await findMemberByPublicId(data.organizationId, data.memberId);
 
     if (data.name || data.surname || data.email) {
       await updateUser(
@@ -328,9 +328,15 @@ const applyUserSearch = (
   };
 };
 
-export const findMemberByPublicId = async (publicId: string, client: TPrismaClientOrTransaction = prisma) => {
+export const findMemberByPublicId = async (
+  organizationId: string,
+  memberId: string,
+  client: TPrismaClientOrTransaction = prisma,
+) => {
+  const organization = await findOrganizationByPublicId(organizationId);
+
   const member = await client.organizationMember.findUnique({
-    where: { public_id: publicId },
+    where: { organizationId: organization.id, public_id: memberId },
     include: selectMemberWithUserAndRoles,
   });
 

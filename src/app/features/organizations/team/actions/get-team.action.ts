@@ -1,25 +1,27 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { QueryBus } from '@/lib/cqrs/query-bus';
-import type { TMember } from '../models/member.model';
-import { GetMemberQuery } from '../queries/get-member.query';
 import { celebrate, Joi } from 'celebrate';
+import type { TTeamQueryResult } from '../models/team.model';
+import { GetTeamQuery } from '../queries/get-team.query';
 
-export const getMemberActionValidation = celebrate(
+export const getTeamActionValidation = celebrate(
   {
     params: Joi.object().keys({
       organizationId: Joi.string().required(),
-      memberId: Joi.string().required(),
+      teamId: Joi.string().required(),
     }),
   },
   { abortEarly: false },
 );
 
-export const getMemberAction = (queryBus: QueryBus) => {
+export const getTeamAction = (queryBus: QueryBus) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { organizationId, memberId } = req.params;
+      const { teamId, organizationId } = req.params;
 
-      const member = await queryBus.execute<GetMemberQuery, TMember>(new GetMemberQuery({ organizationId, memberId }));
+      const member = await queryBus.execute<GetTeamQuery, TTeamQueryResult>(
+        new GetTeamQuery({ teamId, organizationId }),
+      );
 
       res.status(200).json(member);
     } catch (error) {

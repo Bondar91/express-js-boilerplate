@@ -153,3 +153,16 @@ export const findOrganizationByPublicId = async (publicId: string, client: TPris
 
   return organization;
 };
+
+export const findOrganizationById = async (id: number, client: TPrismaClientOrTransaction = prisma) => {
+  const organization = await client.organization.findUnique({
+    where: { id },
+    include: selectOrganizationWithMember,
+  });
+
+  if (!organization) {
+    throw new NotFoundError('Organization not found');
+  }
+
+  return organization;
+};

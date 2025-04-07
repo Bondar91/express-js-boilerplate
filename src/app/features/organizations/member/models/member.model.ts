@@ -89,5 +89,6 @@ export type TMemberQueryResult = {
 };
 
 export interface IGetMemberParam {
+  organizationId: string;
   memberId: string;
 }

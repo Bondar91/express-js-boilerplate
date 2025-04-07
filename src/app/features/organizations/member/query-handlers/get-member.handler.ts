@@ -8,7 +8,8 @@ export class GetMemberHandler implements IQueryHandler<GetMemberQuery, TMemberQu
   public queryType = 'GET_MEMBER';
 
   public async execute(query: GetMemberQuery): Promise<TMemberQueryResult> {
-    const member = await findMemberByPublicId(query.params.memberId);
+    const { organizationId, memberId } = query.params;
+    const member = await findMemberByPublicId(organizationId, memberId);
     const transformedMember = transformMemberResponse(member);
 
     return transformedMember;

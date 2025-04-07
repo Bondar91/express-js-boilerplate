@@ -32,3 +32,8 @@ export type TTeamQueryResult = {
   description: string | null;
   members: Omit<TMemberUserData, 'public_id'>[];
 };
+
+export interface IGetTeamParam {
+  organizationId: string;
+  teamId: string;
+}
