@@ -1,0 +1,60 @@
+post:
+  tags:
+    - Members
+  summary: Utwórz członka klubu
+  description: Tworzy nowego członka w organizacji
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+            - surname
+            - email
+            - roleId
+          properties:
+            name:
+              type: string
+              example: "NameTest"
+            surname:
+              type: string
+              example: "SurnameTest"
+            email:
+              type: string
+              example: "email@example.com"
+            roleId:
+              type: string
+              example: "3c5224cc-74de-4239-970f-8cfd2cf37111"
+  responses:
+    "201":
+      description: Członek została utworzony
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/response.yaml"
+    "400":
+      description: Nieprawidłowe dane
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-400.yaml"
+    "404":
+      description: Nie znaleziono członka
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"
+    "409":
+      description: Uytkownik o takim adresie email ju istnieje
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-409.yaml"
+    "500":
+      description: Błąd serwera
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"

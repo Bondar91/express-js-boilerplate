@@ -14,47 +14,123 @@ datasource db {
 }
 
 model User {
-    id                Int                 @id @default(autoincrement())
-    public_id         String              @unique @default(uuid())
-    name              String              @db.VarChar(50)
-    surname           String              @db.VarChar(50)
-    email             String              @unique @db.VarChar(100)
-    password          String              @db.VarChar(255)
-    refreshToken      String?             @db.VarChar(1000)
-    createdAt         DateTime            @default(now())
-    updatedAt         DateTime            @updatedAt
-    OrganizationOwner OrganizationOwner[]
+    id                 Int                  @id @default(autoincrement())
+    public_id          String               @unique @default(uuid())
+    name               String               @db.VarChar(50)
+    surname            String               @db.VarChar(50)
+    email              String               @unique @db.VarChar(100)
+    password           String?              @db.VarChar(255)
+    refreshToken       String?              @db.VarChar(1000)
+    createdAt          DateTime             @default(now())
+    updatedAt          DateTime             @updatedAt
+    OrganizationMember OrganizationMember[]
 }
 
 model Organization {
-    id                Int                 @id @default(autoincrement())
-    public_id         String              @unique @default(uuid())
-    name              String              @db.VarChar(255)
-    slug              String              @unique
-    type              String              @default("club")
-    address           String?             @db.VarChar(255)
-    city              String?             @db.VarChar(100)
-    postalCode        String?             @db.VarChar(20)
-    country           String?             @default("PL") @db.VarChar(2)
-    phone             String?             @db.VarChar(20)
-    email             String?             @db.VarChar(100)
-    website           String?             @db.VarChar(255)
-    settings          Json?
-    active            Boolean             @default(true)
-    createdAt         DateTime            @default(now())
-    updatedAt         DateTime            @updatedAt
-    OrganizationOwner OrganizationOwner[]
+    id                 Int                  @id @default(autoincrement())
+    public_id          String               @unique @default(uuid())
+    name               String               @db.VarChar(255)
+    slug               String               @unique
+    type               String               @default("club")
+    address            String?              @db.VarChar(255)
+    city               String?              @db.VarChar(100)
+    postalCode         String?              @db.VarChar(20)
+    country            String?              @default("PL") @db.VarChar(2)
+    phone              String?              @db.VarChar(20)
+    email              String?              @db.VarChar(100)
+    website            String?              @db.VarChar(255)
+    settings           Json?
+    active             Boolean              @default(true)
+    createdAt          DateTime             @default(now())
+    updatedAt          DateTime             @updatedAt
+    SystemRole         SystemRole[]
+    OrganizationMember OrganizationMember[]
+    Team               Team[]
 }
 
-model OrganizationOwner {
-    id             Int      @id @default(autoincrement())
-    public_id      String   @unique @default(uuid())
+model SystemRole {
+    id             Int          @id @default(autoincrement())
+    public_id      String       @unique @default(uuid())
+    name           String       @db.VarChar(50)
+    description    String?      @db.VarChar(255)
     organizationId Int
-    userId         Int
-    joinedAt       DateTime @default(now())
+    organization   Organization @relation(fields: [organizationId], references: [id])
+    permissions    Json?
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @updatedAt
 
-    organization Organization @relation(fields: [organizationId], references: [id])
-    user         User         @relation(fields: [userId], references: [id])
+    memberRoles MemberRole[]
 
-    @@unique([organizationId, userId])
+    @@unique([name, organizationId])
+}
+
+model OrganizationMember {
+    id              Int              @id @default(autoincrement())
+    public_id       String           @unique @default(uuid())
+    userId          Int
+    user            User             @relation(fields: [userId], references: [id])
+    organizationId  Int
+    organization    Organization     @relation(fields: [organizationId], references: [id])
+    status          MembershipStatus @default(PENDING)
+    statusChangedAt DateTime         @default(now())
+    statusChangedBy Int?
+    isSuperAdmin    Boolean          @default(false)
+    joinedAt        DateTime         @default(now())
+    updatedAt       DateTime         @updatedAt
+
+    roles           MemberRole[]
+    teamMemberships TeamMember[]
+
+    @@unique([userId, organizationId])
+}
+
+model MemberRole {
+    id         Int                @id @default(autoincrement())
+    public_id  String             @unique @default(uuid())
+    memberId   Int
+    member     OrganizationMember @relation(fields: [memberId], references: [id])
+    roleId     Int
+    role       SystemRole         @relation(fields: [roleId], references: [id])
+    assignedBy Int?
+    assignedAt DateTime           @default(now())
+    updatedAt  DateTime           @updatedAt
+
+    @@unique([memberId, roleId])
+}
+
+model Team {
+    id             Int          @id @default(autoincrement())
+    public_id      String       @unique @default(uuid())
+    name           String       @db.VarChar(255)
+    description    String?      @db.VarChar(1000)
+    organizationId Int
+    organization   Organization @relation(fields: [organizationId], references: [id])
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @updatedAt
+
+    members TeamMember[]
+
+    @@unique([name, organizationId])
+}
+
+model TeamMember {
+    id        Int                @id @default(autoincrement())
+    public_id String             @unique @default(uuid())
+    memberId  Int
+    member    OrganizationMember @relation(fields: [memberId], references: [id])
+    teamId    Int
+    team      Team               @relation(fields: [teamId], references: [id])
+    role      String?            @db.VarChar(50) // np. "leader", "player"
+    joinedAt  DateTime           @default(now())
+    updatedAt DateTime           @updatedAt
+
+    @@unique([memberId, teamId])
+}
+
+enum MembershipStatus {
+    PENDING // Zaproszony, czeka na akceptację
+    ACTIVE // Aktywny członek
+    SUSPENDED // Tymczasowo zawieszony
+    INACTIVE // Nieaktywny (np. były członek)
+    BLOCKED // Zablokowany (np. z powodu naruszenia zasad)
 }

@@ -1,0 +1,20 @@
+type: object
+properties:
+  id:
+    type: string
+    example: "8fe8d8bd-c9ab-4b86-b4de-18022bcdca23"
+  name:
+    type: string
+    example: "TestName"
+  surname:
+    type: string
+    example: "TestSurname"
+  email:
+    type: string
+    example: "email@example.com"
+  status:
+    type: boolean
+    example: "ACTIVE"
+  roles:
+    type: array
+    example: ["leader"]

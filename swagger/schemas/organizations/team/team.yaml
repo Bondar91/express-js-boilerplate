@@ -1,0 +1,24 @@
+type: object
+properties:
+  id:
+    type: string
+    example: "8fe8d8bd-c9ab-4b86-b4de-18022bcdca23"
+  name:
+    type: string
+    example: "Team Example name"
+  description:
+    type: string
+    example: "Description example team"
+  members:
+    type: array
+    items:
+      properties:
+        name:
+          type: string;
+          example: "Jan"
+        surname:
+          type: string;
+          example: "Kowalski"
+        email:
+          type: string
+          example: "jan.kowalski@example.com"

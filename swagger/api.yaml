@@ -14,14 +14,38 @@ paths:
 
   /organizations:
     get:
-      $ref: "paths/organizations/list.yaml#/get"
+      $ref: "paths/organizations/organization/list.yaml#/get"
     post:
-      $ref: "paths/organizations/create.yaml#/post"
+      $ref: "paths/organizations/organization/create.yaml#/post"
   /organizations/{publicId}:
     get:
-      $ref: "paths/organizations/get.yaml#/get"
+      $ref: "paths/organizations/organization/get.yaml#/get"
     patch:
-      $ref: "paths/organizations/edit.yaml#/patch"
+      $ref: "paths/organizations/organization/edit.yaml#/patch"
+
+  /organizations/{organizationId}/members:
+    get:
+      $ref: "paths/organizations/member/list.yaml#/get"
+    post:
+      $ref: "paths/organizations/member/create.yaml#/post"
+  /organizations/{organizationId}/members/{memberId}:
+    get:
+      $ref: "paths/organizations/member/get.yaml#/get"
+    put:
+      $ref: "paths/organizations/member/edit.yaml#/put"
+
+  /organizations/{organizationId}/teams:
+    post:
+      $ref: "paths/organizations/team/create.yaml#/post"
+    get:
+      $ref: "paths/organizations/team/list.yaml#/get"
+  /organizations/{organizationId}/teams/{teamId}:
+    get:
+      $ref: "paths/organizations/team/get.yaml#/get"
+    put:
+      $ref: "paths/organizations/team/edit.yaml#/put"
+    patch:
+      $ref: "paths/organizations/team/assign.yaml#/patch"
 
   /users:
     get:

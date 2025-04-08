@@ -7,7 +7,9 @@ export interface ICreateUserPayload {
   name: string;
   surname: string;
   email: string;
-  password: string;
+  password?: string;
 }
+
+export interface IUpdateUserPayload extends ICreateUserPayload {}
 
 export interface IGetUsersParams {}

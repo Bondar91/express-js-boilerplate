@@ -1,0 +1,81 @@
+get:
+  tags:
+    - Members
+  summary: Lista członków
+  description: Pobiera paginowaną listę członków z możliwością filtrowania i sortowania
+  parameters:
+    - in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: Numer strony
+    - in: query
+      name: limit
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+      description: Liczba wyników na stronę
+    - in: query
+      name: search
+      schema:
+        type: string
+      description: Fraza do wyszukiwania
+    - in: query
+      name: filter
+      schema:
+        type: string
+      description: Filtr w formacie JSON
+    - in: query
+      name: sort
+      schema:
+        type: string
+      description: Sortowanie w formacie JSON
+  responses:
+    "200":
+      description: Pomyślnie pobrano listę członków danej organizacji
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              meta:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 100
+                  page:
+                    type: integer
+                    example: 1
+                  limit:
+                    type: integer
+                    example: 10
+                  totalPages:
+                    type: integer
+                    example: 10
+              data:
+                type: array
+                items:
+                  $ref: "../../../schemas/organizations/member/member.yaml"
+    "400":
+      description: Nieprawidłowe dane
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-400.yaml"
+    "404":
+      description: Nie znaleziono członka
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"
+    "500":
+      description: Błąd serwera
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"

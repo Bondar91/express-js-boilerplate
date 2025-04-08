@@ -1,0 +1,45 @@
+get:
+  tags:
+    - Teams
+  summary: Pobierz zespół
+  description: Pobiera szczegółowe informacje o zespole
+  parameters:
+    - in: path
+      name: organizationId
+      required: true
+      schema:
+        type: string
+      description: Publiczny identyfikator organizacji
+      example: "1adcf784-e8f9-43a2-b9e0-31d03f19afb9"
+    - in: path
+      name: teamId
+      required: true
+      schema:
+        type: string
+      description: Publiczny identyfikator zespołu
+      example: "1adcf784-e8f9-43a2-b9e0-31d03f19afb9"
+  responses:
+    "200":
+      description: Pomyślnie pobrano szczegóły zespołu
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/organizations/team/team.yaml"
+    "400":
+      description: Nieprawidłowe dane
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-400.yaml"
+    "404":
+      description: Nie znaleziono zespołu
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"
+    "500":
+      description: Błąd serwera
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"

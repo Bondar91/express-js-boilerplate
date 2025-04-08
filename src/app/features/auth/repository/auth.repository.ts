@@ -11,7 +11,7 @@ export const validateUserCredentials = async (email: string, password: string) =
     throw new UnauthorizedError('Invalid email or password');
   }
 
-  const isPasswordValid = await comparePasswords(password, user.password);
+  const isPasswordValid = await comparePasswords(password, user.password!);
 
   if (!isPasswordValid) {
     throw new UnauthorizedError('Invalid email or password');

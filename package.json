@@ -13,6 +13,7 @@
     "test": "jest",
     "orm-migrate-dev": "npx prisma migrate dev",
     "orm-generate": "npx prisma generate",
+    "orm-seed": "ts-node prisma/seed.ts",
     "prepare": "husky"
   },
   "engines": {

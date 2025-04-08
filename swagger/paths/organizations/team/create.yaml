@@ -1,0 +1,46 @@
+post:
+  tags:
+    - Teams
+  summary: Utwórz drużynę
+  description: Tworzy nową drużynę w organizacji
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              example: "Team example name"
+            description:
+              type: string
+              nullable: true
+              example: "Example team description"
+  responses:
+    "201":
+      description: Drużyna została utworzona
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/response.yaml"
+    "400":
+      description: Nieprawidłowe dane
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-400.yaml"
+    "404":
+      description: Nie znaleziono członka
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"
+    "500":
+      description: Błąd serwera
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"
