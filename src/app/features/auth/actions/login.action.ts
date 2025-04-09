@@ -28,25 +28,24 @@ export const loginAction = (commandBus: CommandBus) => {
         }),
       );
 
+      const isProduction = process.env.NODE_ENV === 'production';
+
       res.cookie('accessToken', authResult.accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
         maxAge: parseInt(process.env.JWT_TOKEN_EXPIRES_IN || '3600', 10) * 1000,
       });
 
       res.cookie('refreshToken', authResult.refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
         maxAge: parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRES_IN || '2592000', 10) * 1000,
       });
 
       res.status(200).json({
-        id: authResult.publicId,
-        name: authResult.name,
-        surname: authResult.surname,
-        email: authResult.email,
+        message: 'Login sucessfull!',
       });
     } catch (error) {
       next(error);

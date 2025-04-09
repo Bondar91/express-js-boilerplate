@@ -13,3 +13,22 @@ export interface ICreateUserPayload {
 export interface IUpdateUserPayload extends ICreateUserPayload {}
 
 export interface IGetUsersParams {}
+
+export interface IGetCurrentUserParams {
+  accessToken: string;
+}
+
+export type TCurrentUserRow = {
+  id: number;
+  public_id: string;
+  name: string;
+  surname: string;
+  email: string;
+};
+
+export type TCurrentUser = {
+  id: string;
+  name: string;
+  surname: string;
+  email: string;
+};
