@@ -1,0 +1,30 @@
+get:
+  tags:
+    - Users
+  summary: Pobierz dane uzytkownika
+  description: Pobiera szczegółowe informacje o uzytkowniku
+  responses:
+    "200":
+      description: Pomyślnie pobrano szczegóły uzytkownika
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/user/current-user.yaml"
+    "401":
+      description: Brak autoryzacji
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/common/error-401.yaml"
+    "404":
+      description: Nie znaleziono uzytkownika
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/common/error-400.yaml"
+    "500":
+      description: Błąd serwera
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/common/error-default.yaml"

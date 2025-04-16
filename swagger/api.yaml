@@ -53,6 +53,10 @@ paths:
     post:
       $ref: "paths/users/create.yaml#/post"
 
+  /users/me:
+    get:
+      $ref: "paths/users/get-current.yaml#/get"
+
 components:
   securitySchemes:
     BearerAuth:
@@ -63,6 +67,8 @@ components:
   schemas:
     User:
       $ref: "schemas/user/user.yaml"
+    CurrentUser:
+      $ref: "schemas/user/current-user.yaml"
     UserCreateRequest:
       $ref: "schemas/user/create-request.yaml"
     Organization:
@@ -75,3 +81,7 @@ components:
       $ref: "schemas/common/error-default.yaml"
     Error400:
       $ref: "schemas/common/error-400.yaml"
+    Error401:
+      $ref: "schemas/common/error-401.yaml"
+    Error409:
+      $ref: "schemas/common/error-409.yaml"

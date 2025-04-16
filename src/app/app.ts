@@ -19,8 +19,20 @@ export const createApp = async () => {
   const app = express();
   const router = await createRouter();
   const appConfig = appConfigFactory(process.env);
+  const allowedOrigins = [process.env.ADMIN_PANEL_URL, process.env.LEADER_PANEL_URL, process.env.PLAYER_PANEL_URL];
 
-  app.use(cors());
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      credentials: true,
+    }),
+  );
   app.use(
     helmet({
       contentSecurityPolicy: {

@@ -15,10 +15,16 @@ post:
       content:
         application/json:
           schema:
-            $ref: "../../schemas/auth/auth-response.yaml"
+            $ref: "../../schemas/common/response.yaml"
     "401":
       description: Invalid credentials
       content:
         application/json:
           schema:
-            $ref: "../../schemas/common/error-default.yaml" 
+            $ref: "../../schemas/common/error-default.yaml"
+    "500":
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/common/error-default.yaml"
