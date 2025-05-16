@@ -10,8 +10,8 @@ export interface ICreateTeamPayload {
 
 export type TMemberUserData = {
   public_id: string;
-  name: string;
-  surname: string;
+  name: string | null;
+  surname: string | null;
   email: string;
 };
 

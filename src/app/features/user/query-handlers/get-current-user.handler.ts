@@ -6,6 +6,7 @@ import type { GetCurrentUserQuery } from '../queries/get-current-user.query';
 import { UnauthorizedError } from '../../auth/errors/unauthorized.error';
 import { JwtService } from '../../auth/services/jwt.service';
 import { transformCurrentUserResponse } from '../transformers/current-user.transformer';
+import { NotFoundError } from '@/errors/not-found.error';
 
 export class GetCurrentUserHandler implements IQueryHandler<GetCurrentUserQuery, TCurrentUser> {
   public queryType = 'GET_CURRENT_USER';
@@ -20,6 +21,10 @@ export class GetCurrentUserHandler implements IQueryHandler<GetCurrentUserQuery,
     const payload = JwtService.verifyAccessToken(accessToken);
 
     const user = await findUserByPublicId(payload.publicId);
+
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
     return transformCurrentUserResponse(user);
   }
 }

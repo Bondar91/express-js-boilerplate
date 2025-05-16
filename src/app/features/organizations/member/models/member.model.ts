@@ -81,8 +81,8 @@ export type TMemberRaw = TMember & {
 
 export type TMemberQueryResult = {
   id: string;
-  name: string;
-  surname: string;
+  name: string | null;
+  surname: string | null;
   email: string;
   status: MembershipStatus;
   roles: string[];

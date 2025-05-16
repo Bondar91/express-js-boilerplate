@@ -28,7 +28,7 @@ export type TCurrentUserRow = {
 
 export type TCurrentUser = {
   id: string;
-  name: string;
-  surname: string;
+  name: string | null;
+  surname: string | null;
   email: string;
 };
