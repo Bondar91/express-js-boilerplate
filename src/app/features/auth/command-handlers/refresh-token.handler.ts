@@ -19,8 +19,8 @@ export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand,
 
       const tokenPayload = {
         publicId: user.public_id,
-        name: user.name,
-        surname: user.surname,
+        name: user.name || '',
+        surname: user.surname || '',
         email: user.email,
       };
 
