@@ -4,8 +4,8 @@ export type TUser = DbUser;
 export type TUserWithoutPassword = Omit<TUser, 'password' | 'refreshToken'>;
 
 export interface ICreateUserPayload {
-  name: string;
-  surname: string;
+  name?: string;
+  surname?: string;
   email: string;
   password?: string;
 }
@@ -21,8 +21,8 @@ export interface IGetCurrentUserParams {
 export type TCurrentUserRow = {
   id: number;
   public_id: string;
-  name: string;
-  surname: string;
+  name: string | null;
+  surname: string | null;
   email: string;
 };
 

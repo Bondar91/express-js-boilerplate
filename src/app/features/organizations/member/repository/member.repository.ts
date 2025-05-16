@@ -22,6 +22,7 @@ import { findOrganizationByPublicId } from '../../organization/repository/organi
 import { findRoleByPublicId, findRolesByPublicIds } from '@/app/features/system-role/repository/system-role.repository';
 import type { TSystemRole } from '@/app/features/system-role/models/system-role.model';
 import { ConflictError } from '@/errors/conflict.error';
+import type { TCurrentUserRow } from '@/app/features/user/models/user.models';
 
 const selectMemberWithUserAndRoles = {
   user: {
@@ -101,6 +102,16 @@ export const createOrganizationMember = async (
       statusChangedBy: data.addedBy ? parseInt(data.addedBy) : null,
       isSuperAdmin: false,
     },
+  });
+};
+
+export const createOrganizationMembers = async (
+  data: ICreateOrganizationMemeberPayload[],
+  client: TPrismaClientOrTransaction = prisma,
+) => {
+  return await client.organizationMember.createMany({
+    data,
+    skipDuplicates: true,
   });
 };
 
@@ -214,11 +225,22 @@ export const findMemberByOrganizationAndUser = async (
   });
 };
 
-export const deleteOrganizationMembers = async (organizationId: number, userId: number) => {
+export const findMembersByOrganizationAndUserIds = async (
+  organizationId: number,
+  users: TCurrentUserRow[],
+  client: TPrismaClientOrTransaction = prisma,
+) => {
+  return client.organizationMember.findMany({
+    where: { organizationId, userId: { in: users.map(user => user.id) } },
+    select: { userId: true },
+  });
+};
+
+export const deleteOrganizationMembers = async (organizationId: number, users: TCurrentUserRow[]) => {
   return await prisma.organizationMember.deleteMany({
     where: {
       organizationId,
-      userId,
+      userId: { in: users.map(u => u.id) },
     },
   });
 };

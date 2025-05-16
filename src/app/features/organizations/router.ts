@@ -4,6 +4,7 @@ import type { QueryBus } from '@/lib/cqrs/query-bus';
 import { createOrganizationRouting } from './organization/router';
 import { createMemberRouting } from './member/router';
 import { createTeamRouting } from './team/router';
+import { createRegistrationOrganizationRouting } from './registration/router';
 
 interface IOrganizationsRouting {
   commandBus: CommandBus;
@@ -15,6 +16,9 @@ export const createOrganizationsRouting = ({ commandBus, queryBus }: IOrganizati
 
   /** Orgranizations routes **/
   router.use('/', createOrganizationRouting({ commandBus, queryBus }));
+
+  /** Registration Orgranizations routes **/
+  router.use('/registration', createRegistrationOrganizationRouting({ commandBus }));
 
   /** Members routes **/
   router.use('/:organizationId/members', createMemberRouting({ commandBus, queryBus }));
