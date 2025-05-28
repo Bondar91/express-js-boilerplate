@@ -16,8 +16,8 @@ datasource db {
 model User {
     id                 Int                  @id @default(autoincrement())
     public_id          String               @unique @default(uuid())
-    name               String               @db.VarChar(50)
-    surname            String               @db.VarChar(50)
+    name               String?              @db.VarChar(50)
+    surname            String?              @db.VarChar(50)
     email              String               @unique @db.VarChar(100)
     password           String?              @db.VarChar(255)
     refreshToken       String?              @db.VarChar(1000)

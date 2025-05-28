@@ -32,8 +32,8 @@ export interface IEditOrganizationPayload extends Omit<ICreateOrganizationPayloa
 export type TMemberUserData = {
   user: {
     public_id: string;
-    name: string;
-    surname: string;
+    name: string | null;
+    surname: string | null;
     email: string;
   };
 };
@@ -46,8 +46,8 @@ export type TOrganizationQueryResult = Omit<TOrganization, 'id' | 'public_id'> &
   id: string;
   members: {
     id: string;
-    name: string;
-    surname: string;
+    name: string | null;
+    surname: string | null;
     email: string;
   }[];
 };

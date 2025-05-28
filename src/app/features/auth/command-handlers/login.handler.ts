@@ -14,8 +14,8 @@ export class LoginHandler implements ICommandHandler<LoginCommand, IAuthTokens> 
 
     const tokenPayload: ITokenPayload = {
       publicId: user.public_id,
-      name: user.name,
-      surname: user.surname,
+      name: user.name || '',
+      surname: user.surname || '',
       email: user.email,
     };
 

@@ -2,7 +2,6 @@ import type { TPrismaClientOrTransaction } from '@/config/db';
 import { prisma } from '@/config/db';
 import type { ICreateUserPayload, IUpdateUserPayload } from '../models/user.models';
 import { hashPassword } from '../../auth/helpers/password.helper';
-import { NotFoundError } from '@/errors/not-found.error';
 import { ConflictError } from '@/errors/conflict.error';
 
 const selectUser = {
@@ -24,8 +23,8 @@ export const createUser = async (data: ICreateUserPayload, client: TPrismaClient
 
   const user = await client.user.create({
     data: {
-      name: data.name,
-      surname: data.surname,
+      name: data.name!,
+      surname: data.surname!,
       email: data.email,
       password: hashedPassword,
     },
@@ -70,10 +69,6 @@ export const findUserByPublicId = async (publicId: string, client: TPrismaClient
     where: { public_id: publicId },
     select: selectUser,
   });
-
-  if (!user) {
-    throw new NotFoundError('User not found');
-  }
 
   return user;
 };

@@ -4,6 +4,10 @@ info:
   version: 1.0.0
   description: API for InvigiClub application
 
+servers:
+  - url: http://localhost:3000/api
+    description: Local server
+
 paths:
   /auth/login:
     $ref: "paths/auth/login.yaml"
@@ -11,6 +15,10 @@ paths:
     $ref: "paths/auth/logout.yaml"
   /auth/refresh-token:
     $ref: "paths/auth/refresh-token.yaml"
+
+  /organizations/registration:
+    post:
+      $ref: "paths/organizations/registration/create.yaml#/post"
 
   /organizations:
     get:

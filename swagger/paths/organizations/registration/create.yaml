@@ -1,0 +1,50 @@
+post:
+  tags:
+    - Registration
+  summary: Rejestracja klubu
+  description: Rejestruje nowy Klub
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+            - email
+            - password
+          properties:
+            name:
+              type: string
+              example: "Nazwa Klubu"
+            email:
+              type: string
+              example: "email@example.com"
+            password:
+              type: string
+              example: "Password1234"
+  responses:
+    "201":
+      description: Klub została utworzony
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/response.yaml"
+    "400":
+      description: Nieprawidłowe dane
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-400.yaml"
+    "409":
+      description: Uytkownik o takim adresie email juz istnieje
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-409.yaml"
+    "500":
+      description: Błąd serwera
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"

@@ -11,11 +11,11 @@ import { NotFoundError } from '@/errors/not-found.error';
 import type { IPaginationParamsDto } from '@/shared/pagination-utils/pagination-utils';
 import { createWhereInput, createOrderBy, calculateSkip } from '@/shared/pagination-utils/pagination-utils';
 import { organizationPaginationOptions } from '../config/pagination.config';
-import { findUserByPublicId } from '@/app/features/user/repository/user.repository';
+import { findUserByPublicId, findUsersByPublicIds } from '@/app/features/user/repository/user.repository';
 import {
-  createOrganizationMember,
+  createOrganizationMembers,
   deleteOrganizationMembers,
-  findMemberByOrganizationAndUser,
+  findMembersByOrganizationAndUserIds,
 } from '../../member/repository/member.repository';
 
 const selectOrganizationWithMember = {
@@ -93,31 +93,42 @@ export const updateOrganization = async (data: IEditOrganizationPayload) => {
 };
 
 const addOrganizationMembers = async (organizationId: number, memberIds: string[]) => {
-  await Promise.all(
-    memberIds.map(async publicId => {
-      const user = await findUserByPublicId(publicId);
+  const users = await findUsersByPublicIds(memberIds);
 
-      const existingMember = await findMemberByOrganizationAndUser(organizationId, user.id);
+  const foundIds = new Set(users.map(user => user.public_id));
+  const missingIds = memberIds.filter(id => !foundIds.has(id));
 
-      if (!existingMember) {
-        await createOrganizationMember({
-          userId: user.id,
-          organizationId,
-          status: 'ACTIVE',
-        });
-      }
-    }),
-  );
+  if (missingIds.length > 0) {
+    throw new Error('Users id not found!');
+  }
+
+  const existingMembers = await findMembersByOrganizationAndUserIds(organizationId, users);
+  const existingUserIds = new Set(existingMembers.map(m => m.userId));
+
+  const membersToCreate = users
+    .filter(user => !existingUserIds.has(user.id))
+    .map(user => ({
+      userId: user.id,
+      organizationId,
+      status: 'ACTIVE' as const,
+    }));
+
+  if (membersToCreate.length > 0) {
+    await createOrganizationMembers(membersToCreate);
+  }
 };
 
 const removeOrganizationMembers = async (organizationId: number, memberIds: string[]) => {
-  await Promise.all(
-    memberIds.map(async publicId => {
-      const user = await findUserByPublicId(publicId);
+  const users = await findUsersByPublicIds(memberIds);
 
-      await deleteOrganizationMembers(organizationId, user.id);
-    }),
-  );
+  const foundIds = new Set(users.map(u => u.public_id));
+  const missingIds = memberIds.filter(id => !foundIds.has(id));
+
+  if (missingIds.length > 0) {
+    throw new Error('Users id not found!');
+  }
+
+  await deleteOrganizationMembers(organizationId, users);
 };
 
 export const listOrganizations = async (params: IPaginationParamsDto): Promise<[TOrganizationRaw[], number]> => {

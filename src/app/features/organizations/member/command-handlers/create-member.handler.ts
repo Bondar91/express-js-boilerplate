@@ -4,6 +4,8 @@ import { createMember } from '../repository/member.repository';
 import type { ICreateMemberPayload } from '../models/member.model';
 import type { CreateMemberCommand } from '../commands/create-member.command';
 import type { TMember } from '../models/member.model';
+import { MemberCreatedEvent } from '../events/member-created.event';
+import { eventDispatcher } from '@/lib/events/event-dispatcher';
 
 export class CreateMemberHandler implements ICommandHandler<CreateMemberCommand, TMember> {
   public commandType = 'CREATE_MEMBER';
@@ -22,6 +24,9 @@ export class CreateMemberHandler implements ICommandHandler<CreateMemberCommand,
     };
 
     const newMemberDb = await createMember(newMember);
+
+    await eventDispatcher.dispatch(new MemberCreatedEvent(command.payload));
+
     return newMemberDb;
   }
 }

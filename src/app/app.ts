@@ -17,9 +17,15 @@ import cookieParser from 'cookie-parser';
 
 export const createApp = async () => {
   const app = express();
+
   const router = await createRouter();
   const appConfig = appConfigFactory(process.env);
-  const allowedOrigins = [process.env.ADMIN_PANEL_URL, process.env.LEADER_PANEL_URL, process.env.PLAYER_PANEL_URL];
+  const allowedOrigins = [
+    process.env.ADMIN_PANEL_URL,
+    process.env.LEADER_PANEL_URL,
+    process.env.PLAYER_PANEL_URL,
+    'http://localhost:3000',
+  ];
 
   app.use(
     cors({
