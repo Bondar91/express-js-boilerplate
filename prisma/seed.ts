@@ -18,6 +18,12 @@ interface IRolesMap {
 async function main() {
   console.log('Starting seed process...');
 
+  const existingUsers = await prisma.user.findFirst();
+  if (existingUsers) {
+    console.log('Database already seeded. Skipping...');
+    return;
+  }
+
   // 1. Tworzymy przykładową organizację
   console.log('Creating Example Organization...');
   const organization = await prisma.organization.create({
@@ -80,6 +86,7 @@ async function main() {
   for (const role of roleData) {
     const createdRole = await prisma.systemRole.create({
       data: {
+        public_id: role.public_id,
         name: role.name,
         description: role.description,
         permissions: role.permissions,

@@ -14,12 +14,16 @@ import YAML from 'yamljs';
 import swaggerUi from 'swagger-ui-express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
+import { cacheClient } from '@/lib/redis/redis-client';
+import { createRateLimiter } from '@/middleware/rate-limiter';
 
 export const createApp = async () => {
   const app = express();
-
+  await cacheClient.connect();
   const router = await createRouter();
   const appConfig = appConfigFactory(process.env);
+  const rateLimiterMiddleware = await createRateLimiter();
+
   const allowedOrigins = [
     process.env.ADMIN_PANEL_URL,
     process.env.LEADER_PANEL_URL,
@@ -61,7 +65,9 @@ export const createApp = async () => {
   const swaggerDocument = await multiFileSwagger(YAML.load(swaggerPath));
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   app.use(cookieParser());
+  app.use(rateLimiterMiddleware);
   app.use('/api', router);
+
   app.use('*', (_req, _res, next) => next(new NotFoundError('Page not found')));
   app.use(errorHandler);
   app.use(errors());

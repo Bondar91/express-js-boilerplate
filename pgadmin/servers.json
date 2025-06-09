@@ -1,0 +1,15 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "Invigiclub Database",
+            "Group": "Servers",
+            "Host": "invigiclub_postgres",
+            "Port": 5432,
+            "MaintenanceDB": "invigiclub_db",
+            "Username": "postgres",
+            "SSLMode": "prefer",
+            "Password": "invigiclub_password",
+            "Favorite": true
+        }
+    }
+}

@@ -6,6 +6,7 @@ import { HttpError } from '../errors/http.error';
 import { BadRequestError } from '../errors/bad-request.error';
 import { type CelebrateError, isCelebrateError } from 'celebrate';
 import { ConflictError } from '@/errors/conflict.error';
+import { RateLimitError } from '@/errors/rate-limit.error';
 
 export enum ERROR_CODE {
   VALIDATION_PARSE = 'error.validation.parse',
@@ -14,6 +15,7 @@ export enum ERROR_CODE {
   APP = 'error.app',
   CONFLICT = 'error.conflict',
   UNKNOWN = 'error.unknown',
+  RATE_LIMIT = 'error.too_many_requests',
 }
 
 interface IValidationErrorItem {
@@ -56,15 +58,21 @@ export const errorHandler: ErrorRequestHandler = (
       });
       return;
 
-    case err instanceof HttpError:
-      res.status(err.status).json({
-        error: { code: ERROR_CODE.HTTP, message: err.message },
-      });
-      return;
-
     case err instanceof ConflictError:
       res.status(err.status).json({
         error: { code: ERROR_CODE.CONFLICT, message: err.message },
+      });
+      return;
+
+    case err instanceof RateLimitError:
+      res.status(err.status).json({
+        error: { code: ERROR_CODE.RATE_LIMIT, message: err.message },
+      });
+      return;
+
+    case err instanceof HttpError:
+      res.status(err.status).json({
+        error: { code: ERROR_CODE.HTTP, message: err.message },
       });
       return;
 

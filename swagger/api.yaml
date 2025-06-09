@@ -15,6 +15,10 @@ paths:
     $ref: "paths/auth/logout.yaml"
   /auth/refresh-token:
     $ref: "paths/auth/refresh-token.yaml"
+  /auth/forgot-password:
+    $ref: "paths/auth/forgot-password.yaml"
+  /auth/reset-password:
+    $ref: "paths/auth/reset-password.yaml"
 
   /organizations/registration:
     post:

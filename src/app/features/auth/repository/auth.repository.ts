@@ -1,6 +1,7 @@
 import { prisma } from '@/config/db';
 import { UnauthorizedError } from '../errors/unauthorized.error';
 import { comparePasswords } from '../helpers/password.helper';
+import type { ICreateForgotPasswordPayload } from '../models/auth.model';
 
 export const validateUserCredentials = async (email: string, password: string) => {
   const user = await prisma.user.findUnique({
@@ -46,5 +47,31 @@ export const clearRefreshToken = async (publicId: string) => {
   return prisma.user.update({
     where: { public_id: publicId },
     data: { refreshToken: null },
+  });
+};
+
+export const findPasswordResetUniqueByToken = async (token: string) => {
+  return await prisma.passwordReset.findUnique({
+    where: { token },
+  });
+};
+
+export const deleteManyPasswordResetByUserId = async (userId: number) => {
+  return await prisma.passwordReset.deleteMany({
+    where: { userId },
+  });
+};
+
+export const createPasswordReset = async ({ userId, token, expiresAt }: ICreateForgotPasswordPayload) => {
+  return prisma.$transaction(async tx => {
+    await deleteManyPasswordResetByUserId(userId);
+
+    return tx.passwordReset.create({
+      data: {
+        userId,
+        token,
+        expiresAt,
+      },
+    });
   });
 };
