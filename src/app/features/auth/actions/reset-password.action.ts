@@ -9,9 +9,6 @@ export const resetPasswordActionValidation = celebrate(
       pid: Joi.string().uuid().required(),
       token: Joi.string().required(),
       password: Joi.string().min(8).required(),
-      confirmPassword: Joi.string().valid(Joi.ref('password')).required().messages({
-        'any.only': 'Password must be the same',
-      }),
     }),
   },
   { abortEarly: false },
