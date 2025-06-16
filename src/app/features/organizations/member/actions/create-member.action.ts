@@ -16,6 +16,7 @@ export const createMemberActionValidation = celebrate(
       email: Joi.string().required().email().max(100),
       roleId: Joi.string().required(),
       status: Joi.string().valid('PENDING', 'ACTIVE').default('PENDING'),
+      guardian: Joi.boolean().optional().default(false),
     }),
   },
   { abortEarly: false },
@@ -25,7 +26,7 @@ export const createMemberAction = (commandBus: CommandBus) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { organizationId } = req.params;
-      const { name, surname, email, roleId, status } = req.body;
+      const { name, surname, email, roleId, status, guardian } = req.body;
 
       const currentUserId = req?.user?.publicId;
 
@@ -38,6 +39,7 @@ export const createMemberAction = (commandBus: CommandBus) => {
           roleId,
           status,
           addedBy: currentUserId || null,
+          guardian,
         }),
       );
 
