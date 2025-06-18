@@ -26,3 +26,19 @@ export interface ILogoutPayload {
 export interface IGenerateTokenPayload {
   token: string;
 }
+
+export interface IForgotPasswordPayload {
+  email: string;
+}
+
+export interface ICreateForgotPasswordPayload {
+  userId: number;
+  token: string;
+  expiresAt: Date;
+}
+
+export interface IResetPasswordRequestPayload {
+  publicId: string;
+  token: string;
+  password: string;
+}

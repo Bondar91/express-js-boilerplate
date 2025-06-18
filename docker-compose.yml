@@ -1,13 +1,123 @@
 services:
+  invigiclub-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      target: ${NODE_ENV:-development}
+    environment:
+      - NODE_APP_PORT=${PORT}
+      - NODE_ENV=${NODE_ENV:-development}
+      - SERVICE_NAME=${SERVICE_NAME:-invigiclub-app}
+      - DATABASE_URL=${DATABASE_URL}
+      - DB_HOST=invigiclub_postgres
+      - DB_PORT=5432
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${POSTGRES_DB}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - JWT_TOKEN_SECRET=${JWT_TOKEN_SECRET}
+      - JWT_TOKEN_EXPIRES_IN=${JWT_TOKEN_EXPIRES_IN}
+      - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET}
+      - JWT_REFRESH_TOKEN_EXPIRES_IN=${JWT_REFRESH_TOKEN_EXPIRES_IN}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+    networks:
+      - management
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "if [ '$${NODE_ENV}' = 'production' ];
+             then ./init-db.sh && npm run start;
+             else ./init-db.sh && npm run dev;
+             fi"
+      
   postgres:
-    image: postgres:17.0-alpine
+    image: postgres:17-alpine
     container_name: invigiclub_postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-    restart: always
+    restart: unless-stopped
     ports:
       - "5432:5432"
+    networks:
+      - app-network
+      - management
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      
+  pgadmin:
+    image: dpage/pgadmin4:9
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+      - ./pgadmin/servers.json:/pgadmin4/servers.json
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - management
+    restart: unless-stopped
+
+  # Redis Cache Service
+  redis:
+    image: redis:8-alpine
+    container_name: redis
+    entrypoint: ["/redis-entrypoint.sh"]
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+      - ./redis/redis-entrypoint.sh:/redis-entrypoint.sh:ro
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # RedisInsight GUI for Redis
+  redisinsight:
+    image: redis/redisinsight:2.68
+    container_name: redisinsight
+    environment:
+      - RI_REDIS_HOST=redis
+      - RI_REDIS_PORT=6379
+      - RI_REDIS_ALIAS=My Redis
+      - RI_REDIS_PASSWORD=${REDIS_PASSWORD}
+    ports:
+      - "5540:5540"
+    volumes:
+      - redisinsight-data:/data
+    networks:
+      - app-network
+    depends_on:
+      - redis
+    restart: unless-stopped
+    
+networks:
+  management:
+    driver: bridge
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  pgadmin-data:
+  redisinsight-data:

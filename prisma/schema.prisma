@@ -24,6 +24,7 @@ model User {
     createdAt          DateTime             @default(now())
     updatedAt          DateTime             @updatedAt
     OrganizationMember OrganizationMember[]
+    passwordReset      PasswordReset[]
 }
 
 model Organization {
@@ -125,6 +126,15 @@ model TeamMember {
     updatedAt DateTime           @updatedAt
 
     @@unique([memberId, teamId])
+}
+
+model PasswordReset {
+    id        Int      @id @default(autoincrement())
+    userId    Int
+    user      User     @relation(fields: [userId], references: [id])
+    token     String   @unique
+    expiresAt DateTime
+    createdAt DateTime @default(now())
 }
 
 enum MembershipStatus {
