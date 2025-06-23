@@ -6,6 +6,10 @@ import type { RegistrationOrganizationCommand } from '../commands/registration-o
 import type { IRegistrationOrganizationPayload } from '../models/registration-organization.model';
 import { registrationOrganization } from '../repository/registration';
 import { slugExists } from '../../organization/repository/organization.repository';
+import { eventDispatcher } from '@/lib/events/event-dispatcher';
+import { AccountActivatedEvent } from '../events/account-activated.event';
+import { randomBytes } from 'crypto';
+import * as bcrypt from 'bcrypt';
 
 export class RegistrationOrganizationHandler implements ICommandHandler<RegistrationOrganizationCommand, string> {
   public commandType = 'REGISTRATION_ORGANIZATION';
@@ -22,8 +26,20 @@ export class RegistrationOrganizationHandler implements ICommandHandler<Registra
       slug: slugToUse,
     };
 
-    const registrationOrganizationDb = await registrationOrganization(newRegistrationOrganization);
-    return registrationOrganizationDb;
+    const {organizationName, user} = await registrationOrganization(newRegistrationOrganization);
+    
+    const { token, hashedToken } = await this.generateUniqueToken();
+    
+
+    await eventDispatcher.dispatch(
+      new AccountActivatedEvent({
+        email,
+        token,
+        publicId: user.public_id,
+      }),
+    );
+
+    return organizationName;
   }
 
   private async generateUniqueSlug(name: string) {
@@ -43,4 +59,19 @@ export class RegistrationOrganizationHandler implements ICommandHandler<Registra
 
     return slug;
   }
+  
+  private async generateUniqueToken() {
+    let token: string;
+    let hashedToken: string;
+    let existingToken: PasswordReset | null;
+
+    do {
+      token = randomBytes(32).toString('hex');
+      hashedToken = await bcrypt.hash(token, 10);
+      existingToken = await findPasswordResetUniqueByToken(hashedToken);
+    } while (existingToken);
+
+    return { token, hashedToken };
+  }
+}
 }

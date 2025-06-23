@@ -49,6 +49,6 @@ export const registrationOrganization = async (data: IRegistrationOrganizationPa
       tx,
     );
 
-    return organization.name;
+    return { organizationName: organization.name, user };
   });
 };

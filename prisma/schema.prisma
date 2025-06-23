@@ -25,6 +25,7 @@ model User {
     updatedAt          DateTime             @updatedAt
     OrganizationMember OrganizationMember[]
     passwordReset      PasswordReset[]
+    ActivationToken    ActivationToken[]
 }
 
 model Organization {
@@ -135,6 +136,16 @@ model PasswordReset {
     token     String   @unique
     expiresAt DateTime
     createdAt DateTime @default(now())
+}
+
+model ActivationToken {
+    id        String   @id @default(uuid())
+    userId    Int
+    user      User     @relation(fields: [userId], references: [id])
+    token     String
+    used      Boolean  @default(false)
+    createdAt DateTime @default(now())
+    expiresAt DateTime
 }
 
 enum MembershipStatus {
