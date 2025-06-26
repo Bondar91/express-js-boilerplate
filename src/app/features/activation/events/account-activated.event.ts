@@ -8,6 +8,7 @@ export class AccountActivatedEvent implements IEvent {
       email: string;
       token: string;
       publicId: string;
+      organizationId: string;
     },
   ) {}
 }

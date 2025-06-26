@@ -43,6 +43,7 @@ model Organization {
     website            String?              @db.VarChar(255)
     settings           Json?
     active             Boolean              @default(true)
+    fee                Int?
     createdAt          DateTime             @default(now())
     updatedAt          DateTime             @updatedAt
     SystemRole         SystemRole[]
@@ -77,6 +78,8 @@ model OrganizationMember {
     statusChangedAt DateTime         @default(now())
     statusChangedBy Int?
     isSuperAdmin    Boolean          @default(false)
+    guardian        Boolean          @default(false)
+    fee             Int?
     joinedAt        DateTime         @default(now())
     updatedAt       DateTime         @updatedAt
 
@@ -107,6 +110,7 @@ model Team {
     description    String?      @db.VarChar(1000)
     organizationId Int
     organization   Organization @relation(fields: [organizationId], references: [id])
+    fee            Int?
     createdAt      DateTime     @default(now())
     updatedAt      DateTime     @updatedAt
 
@@ -142,7 +146,7 @@ model ActivationToken {
     id        String   @id @default(uuid())
     userId    Int
     user      User     @relation(fields: [userId], references: [id])
-    token     String
+    token     String   @unique
     used      Boolean  @default(false)
     createdAt DateTime @default(now())
     expiresAt DateTime

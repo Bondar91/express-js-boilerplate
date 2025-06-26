@@ -4,11 +4,11 @@ export class AccountActivateMailService {
   private static instance: AccountActivateMailService;
   private constructor() {}
 
-  public async sendAccountActivateEmail(email: string, token: string, publicId: string) {
+  public async sendAccountActivateEmail(email: string, token: string, publicId: string, organizationId: string) {
     await mailService.send({
       to: email,
       subject: 'Aktywacja konta',
-      html: `<p>Twój link do aktywacji konta: <a href="${process.env.ADMIN_PANEL_URL}/auth/reset-password?pid=${publicId}&token=${token}>Link</a></p>`,
+      html: `<p>Twój link do aktywacji konta: <a href="${process.env.ADMIN_PANEL_URL}/auth/account-activate?pid=${publicId}&token=${token}&oid=${organizationId}>Link</a></p>`,
     });
   }
 

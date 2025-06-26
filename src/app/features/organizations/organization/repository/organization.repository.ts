@@ -38,8 +38,8 @@ export const createOrganization = async (data: ICreateOrganizationPayload) => {
 
   const organization = await prisma.organization.create({
     data: {
-      name: data.name,
-      slug: data.slug,
+      name: data.name!,
+      slug: data.slug!,
       type: data.type,
       address: data.address,
       city: data.city,

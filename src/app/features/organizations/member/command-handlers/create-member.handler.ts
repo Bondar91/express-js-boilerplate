@@ -11,7 +11,7 @@ export class CreateMemberHandler implements ICommandHandler<CreateMemberCommand,
   public commandType = 'CREATE_MEMBER';
 
   public async execute(command: CreateMemberCommand): Promise<TMember> {
-    const { name, surname, email, roleId, status, addedBy, organizationId } = command.payload;
+    const { name, surname, email, roleId, status, addedBy, organizationId, guardian } = command.payload;
 
     const newMember: ICreateMemberPayload = {
       name,
@@ -21,6 +21,7 @@ export class CreateMemberHandler implements ICommandHandler<CreateMemberCommand,
       status,
       addedBy,
       organizationId,
+      guardian,
     };
 
     const newMemberDb = await createMember(newMember);

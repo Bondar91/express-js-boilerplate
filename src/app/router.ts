@@ -7,6 +7,8 @@ import { creteUserRouting } from './features/user/router';
 import { createAuthRouting } from './features/auth/router';
 import { createOrganizationsRouting } from './features/organizations/router';
 import { eventDispatcher, registerSubscribers } from '@/lib/events/event-dispatcher';
+import { createActivationRouting } from './features/activation/router';
+import { createRegistrationOrganizationRouting } from './features/registration/router';
 
 export const createRouter = async () => {
   const router = express.Router();
@@ -20,6 +22,8 @@ export const createRouter = async () => {
   router.use('/users', creteUserRouting({ commandBus, queryBus }));
   router.use('/auth', createAuthRouting({ commandBus }));
   router.use('/organizations', createOrganizationsRouting({ commandBus, queryBus }));
+  router.use('/registration', createRegistrationOrganizationRouting({ commandBus }));
+  router.use('/activation', createActivationRouting({ commandBus }));
 
   return router;
 };

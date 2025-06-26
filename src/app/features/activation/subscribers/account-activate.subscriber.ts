@@ -15,12 +15,12 @@ export class AccountActivateSubscriber implements IEventSubscriber {
   }
 
   public async handleAccountActivated(event: AccountActivatedEvent) {
-    const { email, token, publicId } = event.payload;
+    const { email, token, publicId, organizationId } = event.payload;
 
     this.logger.info(`Sending account activated email to ${email}`);
 
     try {
-      await accountActivateMailService.sendAccountActivateEmail(email, token, publicId);
+      await accountActivateMailService.sendAccountActivateEmail(email, token, publicId, organizationId);
       this.logger.info(`Account activate email sent successfully to ${email}`);
     } catch (error) {
       this.logger.error(`Failed to send account activate email to ${email}`, { error });

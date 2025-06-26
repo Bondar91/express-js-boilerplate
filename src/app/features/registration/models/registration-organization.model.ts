@@ -4,3 +4,7 @@ export interface IRegistrationOrganizationPayload {
   password: string;
   slug?: string;
 }
+
+export interface IRegistrationOrganizationResponse {
+  organizationId: string;
+}

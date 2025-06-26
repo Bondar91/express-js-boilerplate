@@ -27,6 +27,9 @@ post:
             roleId:
               type: string
               example: "3c5224cc-74de-4239-970f-8cfd2cf37111"
+            guardian:
+              type: boolean
+              example: true
   responses:
     "201":
       description: Członek została utworzony

@@ -1,0 +1,36 @@
+post:
+  summary: Resend Activation Link
+  operationId: resendActivationLink
+  tags:
+    - activation
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../schemas/activation/resend-activation-link-request.yaml"
+  responses:
+    "200":
+      description: Resend activation link successful
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/common/response.yaml"
+    "400":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/common/error-400.yaml"
+    "429":
+      description: Too many attempts
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/common/error-409.yaml"
+    "500":
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/common/error-default.yaml"

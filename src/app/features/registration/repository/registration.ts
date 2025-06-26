@@ -1,9 +1,9 @@
 import { prisma } from '@/config/db';
 import type { IRegistrationOrganizationPayload } from '../models/registration-organization.model';
-import { createOrganization } from '../../organization/repository/organization.repository';
+import { createOrganization } from '../../organizations/organization/repository/organization.repository';
 import { createUser, findUserByEmail } from '@/app/features/user/repository/user.repository';
 import { ConflictError } from '@/errors/conflict.error';
-import { createMemberRole, createOrganizationMember } from '../../member/repository/member.repository';
+import { createMemberRole, createOrganizationMember } from '../../organizations/member/repository/member.repository';
 import { findRoleByPublicId } from '@/app/features/system-role/repository/system-role.repository';
 import { SYSTEM_ROLE_IDS } from '@/shared/role-utils/role-utils';
 
@@ -18,6 +18,7 @@ export const registrationOrganization = async (data: IRegistrationOrganizationPa
     user = await createUser(
       {
         email: data.email,
+        password: data.password,
       },
       tx,
     );
@@ -25,6 +26,7 @@ export const registrationOrganization = async (data: IRegistrationOrganizationPa
     const organization = await createOrganization({
       name: data.name,
       slug: data.slug!,
+      active: false,
       memberId: user.public_id,
     });
 
@@ -49,6 +51,6 @@ export const registrationOrganization = async (data: IRegistrationOrganizationPa
       tx,
     );
 
-    return { organizationName: organization.name, user };
+    return { organizationName: organization.name, organizationId: organization.public_id, user };
   });
 };

@@ -20,9 +20,17 @@ paths:
   /auth/reset-password:
     $ref: "paths/auth/reset-password.yaml"
 
-  /organizations/registration:
+  /registration:
     post:
-      $ref: "paths/organizations/registration/create.yaml#/post"
+      $ref: "paths/registration/create.yaml#/post"
+  
+  /activation/resend-link:
+    post:
+      $ref: "paths/activation/resend-activation-link.yaml#/post"
+  /activation/account-activate:
+    patch:
+      $ref: "paths/activation/account-activate.yaml#/patch"
+      
 
   /organizations:
     get:

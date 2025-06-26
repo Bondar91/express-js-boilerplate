@@ -70,6 +70,7 @@ export const createMember = async (data: ICreateMemberPayload) => {
         organizationId: organization.id,
         status: data.status,
         addedBy: data.addedBy,
+        guardian: data.guardian,
       },
       tx,
     );
@@ -101,6 +102,7 @@ export const createOrganizationMember = async (
       statusChangedAt: new Date(),
       statusChangedBy: data.addedBy ? parseInt(data.addedBy) : null,
       isSuperAdmin: false,
+      guardian: data.guardian || false,
     },
   });
 };
