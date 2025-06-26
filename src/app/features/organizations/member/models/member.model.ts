@@ -10,6 +10,7 @@ export interface ICreateMemberPayload {
   roleId: string;
   status: MembershipStatus;
   addedBy?: string | null;
+  guardian?: boolean;
 }
 
 export interface ICreateOrganizationMemeberPayload {
@@ -17,6 +18,7 @@ export interface ICreateOrganizationMemeberPayload {
   organizationId: number;
   status: MembershipStatus;
   addedBy?: string | null;
+  guardian?: boolean;
 }
 
 export interface ICreateMemberRolePayload {

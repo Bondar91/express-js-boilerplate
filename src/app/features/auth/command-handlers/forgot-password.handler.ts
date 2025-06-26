@@ -2,8 +2,6 @@ import type { ICommandHandler } from '@/lib/cqrs/command-bus/command-bus.types';
 
 import type { ForgotPasswordCommand } from '../commands/forgot-password.command';
 import { findUserByEmail } from '../../user/repository/user.repository';
-// import { NotFoundError } from '@/errors/not-found.error';
-
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 import { createPasswordReset, findPasswordResetUniqueByToken } from '../repository/auth.repository';

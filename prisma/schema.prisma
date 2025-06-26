@@ -76,6 +76,7 @@ model OrganizationMember {
     statusChangedAt DateTime         @default(now())
     statusChangedBy Int?
     isSuperAdmin    Boolean          @default(false)
+    guardian        Boolean          @default(false)
     joinedAt        DateTime         @default(now())
     updatedAt       DateTime         @updatedAt
 
