@@ -21,7 +21,7 @@ export class CreateOrganizationHandler implements ICommandHandler<CreateOrganiza
       }
       slugToUse = slug;
     } else {
-      slugToUse = await this.generateUniqueSlug(name);
+      slugToUse = await this.generateUniqueSlug(name!);
     }
 
     const newOrganization: ICreateOrganizationPayload = {
