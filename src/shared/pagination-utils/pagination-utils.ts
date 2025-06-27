@@ -24,7 +24,7 @@ export interface IPaginationParamsDto {
   sort?: { [key: string]: SORT_ORDER };
   filter?: { [key: string]: string | string[] | boolean | number };
   search?: string;
-  organizationId: string;
+  organizationId?: string;
 }
 
 export interface IPaginationOptions {

@@ -301,12 +301,16 @@ export const findRolesByMemberId = async (memberId: number, client: TPrismaClien
 };
 
 export const listMember = async (params: IPaginationParamsDto): Promise<[TMemberRaw[], number]> => {
-  const organization = await findOrganizationByPublicId(params.organizationId);
-
   let where = createWhereInput(params.filter, undefined, []);
   where = applyRolesFilter(where, params.filter);
   where = applyUserSearch(where, params.search, memberPaginationOptions.searchFields);
-  where.organizationId = organization.id;
+
+  let organization;
+  if (params.organizationId) {
+    organization = await findOrganizationByPublicId(params.organizationId);
+    where.organizationId = organization.id;
+  }
+
   const orderBy = createOrderBy(params.sort);
   const page = params.page ? Number(params.page) : 1;
   const limit = params.limit ? Number(params.limit) : memberPaginationOptions.defaultLimit;
