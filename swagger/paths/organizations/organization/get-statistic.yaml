@@ -1,0 +1,38 @@
+get:
+  tags:
+    - Organizations
+  summary: Pobierz statystyki organizacji
+  description: Pobiera statystyki konkretnej organizacji
+  parameters:
+    - in: path
+      name: publicId
+      required: true
+      schema:
+        type: string
+      description: Publiczny identyfikator organizacji
+      example: "org_123456"
+  responses:
+    "200":
+      description: Pomyślnie pobrano statystyki organizacji
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/organizations/organization/statistic.yaml"
+    "400":
+      description: Nieprawidłowe dane
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-400.yaml"
+    "404":
+      description: Nie znaleziono organizacji
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"
+    "500":
+      description: Błąd serwera
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"

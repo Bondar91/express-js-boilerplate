@@ -42,6 +42,9 @@ paths:
       $ref: "paths/organizations/organization/get.yaml#/get"
     patch:
       $ref: "paths/organizations/organization/edit.yaml#/patch"
+  /organizations/{publicId}/statistics:
+    get:
+      $ref: "paths/organizations/organization/get-statistic.yaml#/get"
 
   /organizations/{organizationId}/members:
     get:

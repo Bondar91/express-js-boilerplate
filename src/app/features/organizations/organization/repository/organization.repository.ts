@@ -177,3 +177,21 @@ export const findOrganizationById = async (id: number, client: TPrismaClientOrTr
 
   return organization;
 };
+
+export const getOrganizationStatistics = async (organizationId: string) => {
+  const organization = await findOrganizationByPublicId(organizationId);
+
+  const membersCount = await prisma.organizationMember.count({
+    where: { organizationId: organization.id },
+  });
+
+  const teamsCount = await prisma.team.count({
+    where: { organizationId: organization.id },
+  });
+
+  return {
+    membersCount,
+    teamsCount,
+    // @todo - inne statystyki
+  };
+};

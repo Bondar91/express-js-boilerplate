@@ -1,4 +1,4 @@
-import type { TOrganizationRaw } from '../models/organization.models';
+import type { TOrganizationRaw, TOrganizationStatisticRaw } from '../models/organization.models';
 
 export const transformOrganizationResponse = (organization: TOrganizationRaw) => {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,5 +14,23 @@ export const transformOrganizationResponse = (organization: TOrganizationRaw) =>
         ...userRest,
       };
     }),
+  };
+};
+
+export const transformOrganizationStatisticResponse = (statistic: TOrganizationStatisticRaw) => {
+  const { membersCount, teamsCount } = statistic;
+
+  return {
+    fees: {
+      monthFees: '1600,00', //@TODO - Do zmiany na pobranie wartośći z API jak będą endpointy
+      overdueFees: '400,00', //@TODO - Do zmiany na pobranie wartośći z API jak będą endpointy
+    },
+    members: {
+      activeMembersCount: membersCount,
+      sentInvitations: 10, //@TODO - Do zmiany na pobranie wartośći z API jak będą endpointy
+    },
+    teams: {
+      teamsCount: teamsCount,
+    },
   };
 };

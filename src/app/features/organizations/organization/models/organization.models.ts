@@ -57,3 +57,22 @@ export type TOrganizationQueryResult = Omit<TOrganization, 'id' | 'public_id'> &
 export interface IGetOrgranizationParam {
   publicId: string;
 }
+
+export type TOrganizationStatisticRaw = {
+  membersCount: number;
+  teamsCount: number;
+};
+
+export type TOrganizationStatisticQueryResult = {
+  fees: {
+    monthFees: string;
+    overdueFees: string;
+  };
+  members: {
+    activeMembersCount: number;
+    sentInvitations: number;
+  };
+  teams: {
+    teamsCount: number;
+  };
+};
