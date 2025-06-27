@@ -24,7 +24,19 @@ import type { TSystemRole } from '@/app/features/system-role/models/system-role.
 import { ConflictError } from '@/errors/conflict.error';
 import type { TCurrentUserRow } from '@/app/features/user/models/user.models';
 
-const selectMemberWithUserAndRoles = {
+const selectMemberWithRealations = {
+  id: true,
+  public_id: true,
+  updatedAt: true,
+  userId: true,
+  organizationId: true,
+  status: true,
+  statusChangedAt: true,
+  statusChangedBy: true,
+  isSuperAdmin: true,
+  guardian: true,
+  fee: true,
+  joinedAt: true,
   user: {
     select: {
       public_id: true,
@@ -41,6 +53,22 @@ const selectMemberWithUserAndRoles = {
           public_id: true,
         },
       },
+    },
+  },
+  teamMemberships: {
+    include: {
+      team: {
+        select: {
+          name: true,
+          public_id: true,
+          fee: true,
+        },
+      },
+    },
+  },
+  organization: {
+    select: {
+      fee: true,
     },
   },
 } as const;
@@ -273,9 +301,12 @@ export const findRolesByMemberId = async (memberId: number, client: TPrismaClien
 };
 
 export const listMember = async (params: IPaginationParamsDto): Promise<[TMemberRaw[], number]> => {
+  const organization = await findOrganizationByPublicId(params.organizationId);
+
   let where = createWhereInput(params.filter, undefined, []);
   where = applyRolesFilter(where, params.filter);
   where = applyUserSearch(where, params.search, memberPaginationOptions.searchFields);
+  where.organizationId = organization.id;
   const orderBy = createOrderBy(params.sort);
   const page = params.page ? Number(params.page) : 1;
   const limit = params.limit ? Number(params.limit) : memberPaginationOptions.defaultLimit;
@@ -286,7 +317,7 @@ export const listMember = async (params: IPaginationParamsDto): Promise<[TMember
       orderBy,
       skip: calculateSkip(page, limit),
       take: limit,
-      include: selectMemberWithUserAndRoles,
+      select: selectMemberWithRealations,
     }),
     prisma.organizationMember.count({ where }),
   ]);
@@ -361,7 +392,7 @@ export const findMemberByPublicId = async (
 
   const member = await client.organizationMember.findUnique({
     where: { organizationId: organization.id, public_id: memberId },
-    include: selectMemberWithUserAndRoles,
+    select: selectMemberWithRealations,
   });
 
   if (!member) {

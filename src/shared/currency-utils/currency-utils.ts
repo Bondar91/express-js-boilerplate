@@ -3,5 +3,5 @@ export function plnToCents(amount: number | string): number {
 }
 
 export function centsToPln(amount: number): string {
-  return (amount / 100).toFixed(2);
+  return (amount / 100).toFixed(2).replace('.', ',');
 }
