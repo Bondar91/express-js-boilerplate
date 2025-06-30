@@ -11,7 +11,7 @@ export const accountActivationActionValidation = celebrate(
       oid: Joi.string().uuid().required(),
       name: Joi.string().min(1).required(),
       surname: Joi.string().min(1).required(),
-      fee: Joi.number().required(),
+      fee: Joi.number().optional(),
     }),
   },
   { abortEarly: false },

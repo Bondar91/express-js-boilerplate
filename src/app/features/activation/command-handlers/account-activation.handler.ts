@@ -24,13 +24,15 @@ export class AccountActivationHandler implements ICommandHandler<AccountActivati
       throw new BadRequestError('Invalid or expired token');
     }
 
+    const feeValue = typeof fee === 'number' ? plnToCents(fee) : undefined;
+
     await activateAccount({
       publicId,
       token,
       organizationId,
       name,
       surname,
-      fee: plnToCents(fee),
+      fee: feeValue,
       activationTokenId: activationToken.id,
     });
   }
