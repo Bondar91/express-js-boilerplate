@@ -15,7 +15,7 @@ export interface IAccountActivationRequestPayload {
   organizationId: string;
   name: string;
   surname: string;
-  fee: number;
+  fee?: number;
 }
 
 export type TAccountActivationPayload = IAccountActivationRequestPayload & {
