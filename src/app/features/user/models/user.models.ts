@@ -6,7 +6,7 @@ export type TUserWithoutPassword = Omit<TUser, 'password' | 'refreshToken'>;
 export interface ICreateUserPayload {
   name?: string;
   surname?: string;
-  email: string;
+  email?: string;
   password?: string;
 }
 

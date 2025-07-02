@@ -15,12 +15,15 @@ export const listMemberActionValidation = celebrate(
       filter: Joi.string().optional(),
       search: Joi.string().optional(),
     }),
+    params: Joi.object().keys({
+      organizationId: Joi.string().required(),
+    }),
   },
   { abortEarly: false },
 );
 
 export const listMemberAction = (queryBus: QueryBus) => {
-  return async ({ query }: Request, res: Response, next: NextFunction) => {
+  return async ({ query, params: reqParams }: Request, res: Response, next: NextFunction) => {
     try {
       const params = {
         ...query,
@@ -29,9 +32,9 @@ export const listMemberAction = (queryBus: QueryBus) => {
         filter: query.filter ? JSON.parse(query.filter as string) : undefined,
         sort: query.sort ? JSON.parse(query.sort as string) : undefined,
       };
-
+      const { organizationId } = reqParams;
       const members = await queryBus.execute<ListMemberQuery, IPaginationResult<TMemberResponse>>(
-        new ListMemberQuery(params),
+        new ListMemberQuery({ ...params, organizationId }),
       );
 
       res.status(200).json(members);

@@ -38,8 +38,8 @@ export const createOrganization = async (data: ICreateOrganizationPayload) => {
 
   const organization = await prisma.organization.create({
     data: {
-      name: data.name,
-      slug: data.slug,
+      name: data.name!,
+      slug: data.slug!,
       type: data.type,
       address: data.address,
       city: data.city,
@@ -176,4 +176,22 @@ export const findOrganizationById = async (id: number, client: TPrismaClientOrTr
   }
 
   return organization;
+};
+
+export const getOrganizationStatistics = async (organizationId: string) => {
+  const organization = await findOrganizationByPublicId(organizationId);
+
+  const membersCount = await prisma.organizationMember.count({
+    where: { organizationId: organization.id },
+  });
+
+  const teamsCount = await prisma.team.count({
+    where: { organizationId: organization.id },
+  });
+
+  return {
+    membersCount,
+    teamsCount,
+    // @todo - inne statystyki
+  };
 };

@@ -17,4 +17,10 @@ properties:
     example: "ACTIVE"
   roles:
     type: array
-    example: ["leader"]
+    example: ["8fe8d8bd-c9ab-4b86-b4de-18022bcdca23"]
+  teams:
+    type: array
+    example: ["FC Madrid"]
+  fee: 
+    type: string
+    example: "50,00"

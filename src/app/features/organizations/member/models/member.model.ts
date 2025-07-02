@@ -76,9 +76,19 @@ export type TMemberRoleData = {
   };
 };
 
+export type TMemberTeamData = {
+  team: {
+    public_id: string;
+    name: string;
+    fee?: number | null;
+  };
+};
+
 export type TMemberRaw = TMember & {
   user: TMemberUserData;
   roles: TMemberRoleData[];
+  teamMemberships: TMemberTeamData[];
+  organization?: { fee?: number | null };
 };
 
 export type TMemberQueryResult = {

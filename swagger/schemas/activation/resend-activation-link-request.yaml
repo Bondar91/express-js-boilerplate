@@ -1,0 +1,13 @@
+type: object
+required:
+  - email
+  - otganizationId
+properties:
+  email:
+    type: string
+    format: string
+    example: "email@example.com"
+  organizationId:
+    type: string
+    format: uuid
+    example: "53fba037-81a0-4342-b155-e56337ae5dd6"

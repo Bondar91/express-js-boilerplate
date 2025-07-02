@@ -3,8 +3,8 @@ import type { Organization as DbOrganization } from '@prisma/client';
 export type TOrganization = DbOrganization;
 
 export interface ICreateOrganizationPayload {
-  name: string;
-  slug: string;
+  name?: string;
+  slug?: string;
   type?: string;
   address?: string;
   city?: string;
@@ -27,6 +27,8 @@ export interface IOrganizationMembers {
 export interface IEditOrganizationPayload extends Omit<ICreateOrganizationPayload, 'memberId'> {
   publicId: string;
   members?: IOrganizationMembers;
+  fee?: number;
+  active?: boolean;
 }
 
 export type TMemberUserData = {
@@ -55,3 +57,22 @@ export type TOrganizationQueryResult = Omit<TOrganization, 'id' | 'public_id'> &
 export interface IGetOrgranizationParam {
   publicId: string;
 }
+
+export type TOrganizationStatisticRaw = {
+  membersCount: number;
+  teamsCount: number;
+};
+
+export type TOrganizationStatisticQueryResult = {
+  fees: {
+    monthFees: string;
+    overdueFees: string;
+  };
+  members: {
+    activeMembersCount: number;
+    sentInvitations: number;
+  };
+  teams: {
+    teamsCount: number;
+  };
+};

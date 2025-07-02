@@ -1,0 +1,33 @@
+type: object
+required:
+  - name
+  - surname
+  - fee
+  - pid
+  - oid
+  - token
+properties:
+  name:
+    type: string
+    format: string
+    example: "Jan"
+  surname:
+    type: string
+    format: string
+    example: "Kowlaski"
+  fee:
+    type: number
+    format: number
+    example: 200
+  pid:
+    type: string
+    format: uuid
+    example: "53fba037-81a0-4342-b155-e56337ae5dd6"
+  oid:
+    type: string
+    format: uuid
+    example: "53fba037-81a0-4342-b155-e56337ae5dd6"
+  token:
+    type: string
+    format: string
+    example: "359fc2ea46bae228b7a247f1338f76d3bdc7c5ea819d38cceba476aff8d416b0"

@@ -14,7 +14,7 @@ const selectUser = {
 } as const;
 
 export const createUser = async (data: ICreateUserPayload, client: TPrismaClientOrTransaction = prisma) => {
-  const existingUser = await findUserByEmail(data.email);
+  const existingUser = await findUserByEmail(data.email!);
 
   if (existingUser) {
     throw new ConflictError('User with this email already exists');
@@ -26,7 +26,7 @@ export const createUser = async (data: ICreateUserPayload, client: TPrismaClient
     data: {
       name: data.name!,
       surname: data.surname!,
-      email: data.email,
+      email: data.email!,
       password: hashedPassword,
     },
   });
@@ -74,6 +74,16 @@ export const findUserByPublicId = async (publicId: string, client: TPrismaClient
         select: {
           token: true,
           expiresAt: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+      },
+      ActivationToken: {
+        select: {
+          id: true,
+          token: true,
+          expiresAt: true,
+          used: true,
         },
         orderBy: { createdAt: 'desc' },
         take: 1,

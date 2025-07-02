@@ -12,6 +12,7 @@ import {
   listOrganizationsActionValidation,
 } from './validations/organization.validation';
 import { getOrganizationAction } from './actions/get-organization.action';
+import { getOrganizationStatisticAction } from './actions/get-organization-statistic.action';
 
 interface IOrganizationRouting {
   commandBus: CommandBus;
@@ -25,6 +26,12 @@ export const createOrganizationRouting = ({ commandBus, queryBus }: IOrganizatio
   router.post('/', [createOrganizationActionValidation], authMiddleware(), createOrganizationAction(commandBus));
   router.patch('/:publicId', [editOrganizationActionValidation], authMiddleware(), editOrganizationAction(commandBus));
   router.get('/:publicId', [getOrganizationActionValidation], authMiddleware(), getOrganizationAction(queryBus));
+  router.get(
+    '/:publicId/statistics',
+    [getOrganizationActionValidation],
+    authMiddleware(),
+    getOrganizationStatisticAction(queryBus),
+  );
 
   return router;
 };

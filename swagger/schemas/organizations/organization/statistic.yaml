@@ -1,0 +1,29 @@
+type: object
+properties:
+  fees:
+    type: object
+    properties:
+      monthFees:
+        type: string
+        example: "1600,00"
+      overdueFees:
+        type: string
+        example: "400,00"
+  members:
+    type: object
+    properties:
+      activeMembersCount:
+        type: number
+        format: int32 
+        example: 20
+      sentInvitations:
+        type: number
+        format: int32 
+        example: 10
+  teams:
+    type: object
+    properties:
+      teamsCount:
+        type: number
+        format: int32 
+        example: 20

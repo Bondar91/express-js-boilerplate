@@ -3,7 +3,7 @@ import type { NextFunction, Request, Response } from 'express';
 import type { CommandBus } from 'src/lib/cqrs/command-bus/command-bus';
 
 import { RegistrationOrganizationCommand } from '../commands/registration-orgranization.command';
-import type { IRegistrationOrganizationPayload } from '../models/registration-organization.model';
+import type { IRegistrationOrganizationResponse } from '../models/registration-organization.model';
 import { celebrate, Joi } from 'celebrate';
 
 export const registrationOrganizationActionValidation = celebrate(
@@ -22,7 +22,10 @@ export const registrationOrganizationAction = (commandBus: CommandBus) => {
     try {
       const { name, email, password } = req.body;
 
-      await commandBus.execute<RegistrationOrganizationCommand, IRegistrationOrganizationPayload>(
+      const organizationId = await commandBus.execute<
+        RegistrationOrganizationCommand,
+        IRegistrationOrganizationResponse
+      >(
         new RegistrationOrganizationCommand({
           name,
           email,
@@ -30,7 +33,7 @@ export const registrationOrganizationAction = (commandBus: CommandBus) => {
         }),
       );
 
-      res.status(201).json({ message: 'Club registration was successful.' });
+      res.status(201).json({ message: 'Club registration was successful.', organizationId });
     } catch (error) {
       next(error);
     }
