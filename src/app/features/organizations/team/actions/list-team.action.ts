@@ -15,12 +15,15 @@ export const listTeamActionValidation = celebrate(
       filter: Joi.string().optional(),
       search: Joi.string().optional(),
     }),
+    params: Joi.object().keys({
+      organizationId: Joi.string().required(),
+    }),
   },
   { abortEarly: false },
 );
 
 export const listTeamAction = (queryBus: QueryBus) => {
-  return async ({ query }: Request, res: Response, next: NextFunction) => {
+  return async ({ query, params: reqParams }: Request, res: Response, next: NextFunction) => {
     try {
       const params = {
         ...query,
@@ -30,8 +33,10 @@ export const listTeamAction = (queryBus: QueryBus) => {
         sort: query.sort ? JSON.parse(query.sort as string) : undefined,
       };
 
+      const { organizationId } = reqParams;
+
       const teams = await queryBus.execute<ListTeamQuery, IPaginationResult<TTeamQueryResult>>(
-        new ListTeamQuery(params),
+        new ListTeamQuery({ ...params, organizationId }),
       );
 
       res.status(200).json(teams);

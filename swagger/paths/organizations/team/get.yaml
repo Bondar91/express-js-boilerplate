@@ -24,7 +24,7 @@ get:
       content:
         application/json:
           schema:
-            $ref: "../../../schemas/organizations/team/team.yaml"
+            $ref: "../../../schemas/organizations/team/team-details.yaml"
     "400":
       description: Nieprawidłowe dane
       content:

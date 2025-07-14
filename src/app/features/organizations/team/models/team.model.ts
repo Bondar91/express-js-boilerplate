@@ -1,4 +1,4 @@
-import type { Team } from '@prisma/client';
+import type { MembershipStatus, Team } from '@prisma/client';
 
 export type TTeam = Team;
 
@@ -21,7 +21,15 @@ export type TTeamRaw = TTeam & {
     role: string | null;
     member: {
       public_id: string;
+      status: MembershipStatus;
+      fee: number | null;
       user: TMemberUserData;
+      roles: {
+        role: {
+          public_id: string;
+          name: string;
+        };
+      }[];
     };
   }[];
 };
@@ -29,8 +37,34 @@ export type TTeamRaw = TTeam & {
 export type TTeamQueryResult = {
   id: string;
   name: string;
-  description: string | null;
-  members: Omit<TMemberUserData, 'public_id'>[];
+  membersNumber: number;
+  fee: string | null;
+  staff: Omit<TMemberUserData, 'public_id'>[];
+};
+
+export type TStaffMember = {
+  name: string | null;
+  surname: string | null;
+  email: string;
+  roleId: string | null;
+};
+
+export type TTeamMemberDetails = {
+  id: string;
+  name: string | null;
+  surname: string | null;
+  email: string;
+  status: string;
+  roles: string[];
+  fee: string | null;
+};
+
+export type TTeamDetailsResult = {
+  id: string;
+  name: string;
+  fee: string | null;
+  staff: TStaffMember[];
+  members: TTeamMemberDetails[];
 };
 
 export interface IGetTeamParam {
