@@ -24,7 +24,7 @@ export type TCurrentUserRow = {
   name: string | null;
   surname: string | null;
   email: string;
-  OrganizationMember: TOrganizationMember[];
+  OrganizationMember?: TOrganizationMember[];
 };
 
 export type TOrganizationMember = {
