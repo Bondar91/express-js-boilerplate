@@ -24,6 +24,14 @@ export type TCurrentUserRow = {
   name: string | null;
   surname: string | null;
   email: string;
+  OrganizationMember: TOrganizationMember[];
+};
+
+export type TOrganizationMember = {
+  organization: {
+    public_id: string;
+    name: string;
+  };
 };
 
 export type TCurrentUser = {

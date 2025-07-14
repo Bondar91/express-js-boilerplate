@@ -12,3 +12,9 @@ properties:
   email:
     type: string
     example: "jan.kowalski@example.com"
+  organizationId:
+    type: string
+    example: "2913c810-b5b6-47a0-bfb6-228f29ec39f6"
+  organizationName:
+    type: string
+    example: "Example Organization"
