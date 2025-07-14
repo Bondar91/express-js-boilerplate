@@ -2,23 +2,30 @@ type: object
 properties:
   id:
     type: string
-    example: "8fe8d8bd-c9ab-4b86-b4de-18022bcdca23"
+    example: "9a7428f6-5e94-4889-8897-268d04279ade"
   name:
     type: string
-    example: "Team Example name"
-  description:
+    example: "Example Team"
+  fee:
     type: string
-    example: "Description example team"
-  members:
+    example: "40,00"
+  membersNumber:
+    type: integer
+    example: 3
+  staff:
     type: array
     items:
+      type: object
       properties:
         name:
-          type: string;
-          example: "Jan"
+          type: string
+          example: "Leader"
         surname:
-          type: string;
-          example: "Kowalski"
+          type: string
+          example: "User"
         email:
           type: string
-          example: "jan.kowalski@example.com"
+          example: "leader@example.com"
+        roleId:
+          type: string
+          example: "2439e3c8-eb99-41c8-b8e4-cb6e4c3ea7c3"

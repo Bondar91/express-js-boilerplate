@@ -1,0 +1,58 @@
+type: object
+properties:
+  id:
+    type: string
+    example: "9a7428f6-5e94-4889-8897-268d04279ade"
+  name:
+    type: string
+    example: "Example Team"
+  fee:
+    type: string
+    example: "40,00"
+  staff:
+    type: array
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Leader"
+        surname:
+          type: string
+          example: "User"
+        email:
+          type: string
+          example: "leader@example.com"
+        roleId:
+          type: string
+          example: "2439e3c8-eb99-41c8-b8e4-cb6e4c3ea7c3"
+  members:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "b2ff12d6-cc2d-4157-af73-890089383c76"
+        name:
+          type: string
+          example: "Super"
+        surname:
+          type: string
+          example: "Admin"
+        email:
+          type: string
+          example: "superadmin@example.com"
+        status:
+          type: string
+          example: "ACTIVE"
+        roles:
+          type: array
+          items:
+            type: string
+            example: "1358e461-b317-4e6a-a0f3-dfee74a8f71d"
+        fee:
+          oneOf:
+            - type: string
+              example: "50,00"
+            - type: "null"

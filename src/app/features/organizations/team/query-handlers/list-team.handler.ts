@@ -12,6 +12,7 @@ export class ListTeamHandler implements IQueryHandler<ListTeamQuery, IPagination
 
   public async execute(query: ListTeamQuery): Promise<IPaginationResult<TTeamQueryResult>> {
     const [teams, total] = await listTeam(query.params);
+
     const transformedTeams = teams.map(team => transformTeamResponse(team));
 
     return makePaginationResult(transformedTeams, total, query.params, teamPaginationOptions);

@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { QueryBus } from '@/lib/cqrs/query-bus';
 import { celebrate, Joi } from 'celebrate';
-import type { TTeamQueryResult } from '../models/team.model';
+import type { TTeamDetailsResult } from '../models/team.model';
 import { GetTeamQuery } from '../queries/get-team.query';
 
 export const getTeamActionValidation = celebrate(
@@ -19,7 +19,7 @@ export const getTeamAction = (queryBus: QueryBus) => {
     try {
       const { teamId, organizationId } = req.params;
 
-      const member = await queryBus.execute<GetTeamQuery, TTeamQueryResult>(
+      const member = await queryBus.execute<GetTeamQuery, TTeamDetailsResult>(
         new GetTeamQuery({ teamId, organizationId }),
       );
 

@@ -14,16 +14,39 @@ import { findOrganizationMembers } from '../../member/repository/member.reposito
 import type { OrganizationMember } from '@prisma/client';
 
 const selectTeamWithMember = {
+  id: true,
+  public_id: true,
+  name: true,
+  description: true,
+  organizationId: true,
+  fee: true,
+  createdAt: true,
+  updatedAt: true,
   members: {
-    include: {
+    select: {
+      public_id: true,
+      role: true,
       member: {
-        include: {
+        select: {
+          public_id: true,
+          status: true,
+          fee: true,
           user: {
             select: {
               public_id: true,
               name: true,
               surname: true,
               email: true,
+            },
+          },
+          roles: {
+            include: {
+              role: {
+                select: {
+                  public_id: true,
+                  name: true,
+                },
+              },
             },
           },
         },
@@ -46,6 +69,13 @@ export const createTeam = async (data: ICreateTeamPayload) => {
 
 export const listTeam = async (params: IPaginationParamsDto): Promise<[TTeamRaw[], number]> => {
   const where = createWhereInput(params.filter, params.search, teamPaginationOptions.searchFields);
+
+  let organization;
+  if (params.organizationId) {
+    organization = await findOrganizationByPublicId(params.organizationId);
+    where.organizationId = organization.id;
+  }
+
   const orderBy = createOrderBy(params.sort);
 
   const page = params.page ? Number(params.page) : 1;
@@ -57,7 +87,7 @@ export const listTeam = async (params: IPaginationParamsDto): Promise<[TTeamRaw[
       orderBy,
       skip: calculateSkip(page, limit),
       take: limit,
-      include: selectTeamWithMember,
+      select: selectTeamWithMember,
     }),
     prisma.team.count({ where }),
   ]);
@@ -73,7 +103,7 @@ export const findTeamByPublicId = async (organizationId: string, teamId: string)
       organizationId: organization.id,
       public_id: teamId,
     },
-    include: selectTeamWithMember,
+    select: selectTeamWithMember,
   });
 
   if (!team) {
