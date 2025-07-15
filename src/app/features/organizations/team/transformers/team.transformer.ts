@@ -23,7 +23,7 @@ export const transformTeamResponse = (team: TTeamRaw) => {
   return {
     id: team.public_id,
     name: team.name,
-    fee: centsToPln(team.fee!) ?? null,
+    fee: team.fee ? centsToPln(team.fee) : null,
     membersNumber,
     staff,
   };
