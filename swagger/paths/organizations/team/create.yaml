@@ -38,6 +38,12 @@ post:
         application/json:
           schema:
             $ref: "../../../schemas/common/error-default.yaml"
+    "409":
+      description: Nie mona dodać druyny o tej samej nazwie
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-409.yaml"
     "500":
       description: Błąd serwera
       content:

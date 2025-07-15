@@ -193,15 +193,31 @@ export const findTeamMemberByPublicIds = async (
   });
 };
 
-export const deleteTeamByPublicId = async (organizationId: string, teamId: string) => {
+export const deleteTeamsByPublicIds = async (organizationId: string, teamIds: string[]) => {
   const organization = await findOrganizationByPublicId(organizationId);
 
-  const deleted = await prisma.team.delete({
+  const deleted = await prisma.team.deleteMany({
     where: {
       organizationId: organization.id,
-      public_id: teamId,
+      public_id: {
+        in: teamIds,
+      },
     },
   });
 
   return deleted;
+};
+
+export const findTeamByName = async (organizationId: string, name: string) => {
+  const organization = await findOrganizationByPublicId(organizationId);
+
+  return prisma.team.findFirst({
+    where: {
+      organizationId: organization.id,
+      name: {
+        equals: name,
+        mode: 'insensitive',
+      },
+    },
+  });
 };

@@ -1,0 +1,52 @@
+delete:
+  tags:
+    - Teams
+  summary: Usuń drużyny z organizacji
+  description: Usuwa drużyny o podanych identyfikatorach (UUID) w ramach organizacji
+  parameters:
+    - in: path
+      name: organizationId
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: UUID organizacji, z której drużyny mają zostać usunięte
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - teamIds
+          properties:
+            teamIds:
+              type: array
+              description: Lista UUID drużyn do usunięcia
+              items:
+                type: string
+                format: uuid
+              example: 
+                - "7e290332-95f2-40a9-b1c3-aacacaee7050"
+                - "3baf3c1d-a06e-45db-891a-b6d8a2c66eb5"
+  responses:
+    "204":
+      description: Drużyny zostały usunięte pomyślnie (brak treści odpowiedzi)
+    "400":
+      description: Nieprawidłowe dane wejściowe (np. brak `teamIds` albo niepoprawny UUID)
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-400.yaml"
+    "404":
+      description: Nie znaleziono organizacji lub jednej z drużyn
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"
+    "500":
+      description: Wewnętrzny błąd serwera
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"
