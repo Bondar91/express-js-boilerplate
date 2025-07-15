@@ -6,6 +6,7 @@ import { listTeamAction, listTeamActionValidation } from './actions/list-team.ac
 import { getTeamAction, getTeamActionValidation } from './actions/get-team.action';
 import { editTeamAction, editTeamActionValidation } from './actions/edit-team.action';
 import { assignTeamMemberAction, assignTeamMemberActionValidation } from './actions/assign-team-member.action';
+import { deleteTeamAction, deleteTeamActionValidation } from './actions/delete-team.action';
 
 interface ITeamRouting {
   commandBus: CommandBus;
@@ -20,6 +21,7 @@ export const createTeamRouting = ({ commandBus, queryBus }: ITeamRouting) => {
   router.get('/:teamId', [getTeamActionValidation], getTeamAction(queryBus));
   router.put('/:teamId', [editTeamActionValidation], editTeamAction(commandBus));
   router.patch('/:teamId', [assignTeamMemberActionValidation], assignTeamMemberAction(commandBus));
+  router.delete('/:teamId', [deleteTeamActionValidation], deleteTeamAction(commandBus));
 
   return router;
 };
