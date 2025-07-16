@@ -88,6 +88,16 @@ export const findUserByPublicId = async (publicId: string, client: TPrismaClient
         orderBy: { createdAt: 'desc' },
         take: 1,
       },
+      OrganizationMember: {
+        select: {
+          organization: {
+            select: {
+              public_id: true,
+              name: true,
+            },
+          },
+        },
+      },
     },
   });
 

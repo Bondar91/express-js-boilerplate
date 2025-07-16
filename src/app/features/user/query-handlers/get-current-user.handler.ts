@@ -25,6 +25,7 @@ export class GetCurrentUserHandler implements IQueryHandler<GetCurrentUserQuery,
     if (!user) {
       throw new NotFoundError('User not found');
     }
+
     return transformCurrentUserResponse(user);
   }
 }
