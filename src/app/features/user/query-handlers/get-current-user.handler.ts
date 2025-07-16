@@ -26,7 +26,6 @@ export class GetCurrentUserHandler implements IQueryHandler<GetCurrentUserQuery,
       throw new NotFoundError('User not found');
     }
 
-    console.log(user, 'user');
     return transformCurrentUserResponse(user);
   }
 }
