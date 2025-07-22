@@ -1,9 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
-
 import type { CommandBus } from 'src/lib/cqrs/command-bus/command-bus';
-
 import { celebrate, Joi } from 'celebrate';
-import type { TTeam } from '../models/team.model';
 import { EditTeamCommand } from '../commands/edit-team.command';
 
 export const editTeamActionValidation = celebrate(
@@ -12,10 +9,14 @@ export const editTeamActionValidation = celebrate(
       organizationId: Joi.string().required(),
       teamId: Joi.string().required(),
     }),
-    body: Joi.object().keys({
-      name: Joi.string().required(),
-      description: Joi.string().optional(),
-    }),
+    body: Joi.object()
+      .keys({
+        name: Joi.string().optional(),
+        fee: Joi.number().integer().min(0).optional(),
+        memberIds: Joi.array().items(Joi.string().required()).min(1).optional(),
+        staffIds: Joi.array().items(Joi.string().required()).min(1).optional(),
+      })
+      .min(1),
   },
   { abortEarly: false },
 );
@@ -24,14 +25,16 @@ export const editTeamAction = (commandBus: CommandBus) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { teamId, organizationId } = req.params;
-      const { name, description } = req.body;
+      const { name, fee, memberIds, staffIds } = req.body;
 
-      await commandBus.execute<EditTeamCommand, TTeam>(
+      await commandBus.execute<EditTeamCommand, void>(
         new EditTeamCommand({
-          teamId,
           organizationId,
+          teamId,
           name,
-          description,
+          fee,
+          memberIds,
+          staffIds,
         }),
       );
 

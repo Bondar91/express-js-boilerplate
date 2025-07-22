@@ -1,4 +1,4 @@
-put:
+patch:
   tags:
     - Teams
   summary: Edytuj zespół
@@ -27,10 +27,24 @@ put:
           properties:
             name:
               type: string
+              description: Nazwa zespołu (opcjonalne)
               example: "Update Team Name"
-            description:
-              type: string
-              example: "Update Team Description"
+            fee:
+              type: number
+              description: Opłata zespołu (opcjonalne)
+              example: 3000
+            memberIds:
+              type: array
+              items:
+                type: string
+              description: Lista publicznych ID członków zespołu (opcjonalne)
+              example: ["1adcf784-e8f9-43a2-b9e0-31d03f19afb9"]
+            staffIds:
+              type: array
+              items:
+                type: string
+              description: Lista publicznych ID członków z rolą leader (opcjonalne)
+              example: ["1adcf784-e8f9-43a2-b9e0-31d03f19afb9"]
   responses:
     "200":
       description: Zespół został zaktualizowany

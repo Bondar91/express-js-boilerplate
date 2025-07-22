@@ -9,6 +9,7 @@ export const transformTeamDetailsResponse = (team: TTeamRaw) => {
     const trainerRole = items.member.roles.find(r => r.role.name === TRAINER_ROLE_NAME);
     if (trainerRole) {
       acc.push({
+        id: items.member.public_id,
         name: items.member.user.name,
         surname: items.member.user.surname,
         email: items.member.user.email,
@@ -22,7 +23,7 @@ export const transformTeamDetailsResponse = (team: TTeamRaw) => {
   const members = team.members
     .filter(items => !items.member.roles.some(r => r.role.name === TRAINER_ROLE_NAME))
     .map(items => ({
-      id: items.member.user.public_id,
+      id: items.member.public_id,
       name: items.member.user.name,
       surname: items.member.user.surname,
       email: items.member.user.email,
