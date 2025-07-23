@@ -77,7 +77,7 @@ export interface IEditTeamPayload {
   organizationId: string;
   teamId: string;
   name?: string;
-  fee?: number;
+  fee?: string;
   memberIds?: string[];
   staffIds?: string[];
 }

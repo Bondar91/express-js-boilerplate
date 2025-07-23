@@ -30,9 +30,9 @@ patch:
               description: Nazwa zespołu (opcjonalne)
               example: "Update Team Name"
             fee:
-              type: number
+              type: string
               description: Opłata zespołu (opcjonalne)
-              example: 3000
+              example: "300 | 300.00"
             memberIds:
               type: array
               items:

@@ -2,6 +2,7 @@ import { centsToPln } from '@/shared/currency-utils/currency-utils';
 import type { TStaffMember, TTeamRaw } from '../models/team.model';
 
 const TRAINER_ROLE_NAME = 'leader';
+const PLAYER_ROLE_NAME = 'player';
 
 export const transformTeamDetailsResponse = (team: TTeamRaw) => {
   // Staff
@@ -21,7 +22,7 @@ export const transformTeamDetailsResponse = (team: TTeamRaw) => {
 
   // Members
   const members = team.members
-    .filter(items => !items.member.roles.some(r => r.role.name === TRAINER_ROLE_NAME))
+    .filter(items => items.member.roles.some(r => r.role.name === PLAYER_ROLE_NAME))
     .map(items => ({
       id: items.member.public_id,
       name: items.member.user.name,

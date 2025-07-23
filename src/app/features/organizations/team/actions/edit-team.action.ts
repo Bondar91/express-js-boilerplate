@@ -12,7 +12,9 @@ export const editTeamActionValidation = celebrate(
     body: Joi.object()
       .keys({
         name: Joi.string().optional(),
-        fee: Joi.number().integer().min(0).optional(),
+        fee: Joi.string()
+          .pattern(/^(?=.+)(?!0+(\.0+)?$)\d+(\.\d+)?$/)
+          .optional(),
         memberIds: Joi.array().items(Joi.string().required()).min(1).optional(),
         staffIds: Joi.array().items(Joi.string().required()).min(1).optional(),
       })

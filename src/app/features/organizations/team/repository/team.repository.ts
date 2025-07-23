@@ -134,7 +134,7 @@ export const updateTeam = async (data: IEditTeamPayload) => {
     if (memberIds !== undefined) {
       const currentMembers = team.members.filter(m => {
         const roles = m.member.roles.map(r => r.role.name);
-        return !roles.includes('leader');
+        return roles.includes('player');
       });
 
       const currentMemberIds = currentMembers.map(m => m.member.public_id);
