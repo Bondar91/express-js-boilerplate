@@ -62,6 +62,8 @@ paths:
       $ref: "paths/organizations/team/create.yaml#/post"
     get:
       $ref: "paths/organizations/team/list.yaml#/get"
+    delete:
+      $ref: "paths/organizations/team/delete.yaml#/delete"
   /organizations/{organizationId}/teams/{teamId}:
     get:
       $ref: "paths/organizations/team/get.yaml#/get"
@@ -69,7 +71,7 @@ paths:
       $ref: "paths/organizations/team/edit.yaml#/put"
     patch:
       $ref: "paths/organizations/team/assign.yaml#/patch"
-
+    
   /users:
     get:
       $ref: "paths/users/list.yaml#/get"

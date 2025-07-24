@@ -84,3 +84,8 @@ export interface IAssignTeamMemberPayload {
     remove: string[];
   };
 }
+
+export interface IDeleteTeamsPayload {
+  teamIds: string[];
+  organizationId: string;
+}
