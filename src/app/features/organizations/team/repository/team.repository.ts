@@ -137,34 +137,47 @@ export const updateTeam = async (data: IEditTeamPayload) => {
         return roles.includes('player');
       });
 
-      const currentMemberIds = currentMembers.map(m => m.member.public_id);
+      if (Array.isArray(memberIds) && memberIds.length === 0) {
+        const currentMemberIds = currentMembers.map(m => m.member.id);
 
-      const toRemove = currentMemberIds.filter(id => !memberIds.includes(id));
-      const toAdd = memberIds.filter(id => !currentMemberIds.includes(id));
-
-      const membersInDb = await tx.organizationMember.findMany({
-        where: { public_id: { in: [...toRemove, ...toAdd] } },
-      });
-
-      const publicIdToId = new Map(membersInDb.map(m => [m.public_id, m.id]));
-
-      if (toRemove.length) {
-        await tx.teamMember.deleteMany({
-          where: {
-            teamId: team.id,
-            memberId: { in: toRemove.map(id => publicIdToId.get(id)).filter((id): id is number => id !== undefined) },
-          },
-        });
-      }
-      for (const idToAdd of toAdd) {
-        const memberIdToAdd = publicIdToId.get(idToAdd);
-        if (memberIdToAdd) {
-          await tx.teamMember.create({
-            data: {
+        if (currentMemberIds.length > 0) {
+          await tx.teamMember.deleteMany({
+            where: {
               teamId: team.id,
-              memberId: memberIdToAdd,
+              memberId: { in: currentMemberIds },
             },
           });
+        }
+      } else {
+        const currentMemberIds = currentMembers.map(m => m.member.public_id);
+
+        const toRemove = currentMemberIds.filter(id => !memberIds.includes(id));
+        const toAdd = memberIds.filter(id => !currentMemberIds.includes(id));
+
+        const membersInDb = await tx.organizationMember.findMany({
+          where: { public_id: { in: [...toRemove, ...toAdd] } },
+        });
+
+        const publicIdToId = new Map(membersInDb.map(m => [m.public_id, m.id]));
+
+        if (toRemove.length) {
+          await tx.teamMember.deleteMany({
+            where: {
+              teamId: team.id,
+              memberId: { in: toRemove.map(id => publicIdToId.get(id)).filter((id): id is number => id !== undefined) },
+            },
+          });
+        }
+        for (const idToAdd of toAdd) {
+          const memberIdToAdd = publicIdToId.get(idToAdd);
+          if (memberIdToAdd) {
+            await tx.teamMember.create({
+              data: {
+                teamId: team.id,
+                memberId: memberIdToAdd,
+              },
+            });
+          }
         }
       }
     }
@@ -174,37 +187,51 @@ export const updateTeam = async (data: IEditTeamPayload) => {
         const roles = m.member.roles.map(r => r.role.name);
         return roles.includes('leader');
       });
-      const currentStaffPublicIds = currentStaff.map(m => m.member.public_id);
 
-      const toRemoveStaff = currentStaffPublicIds.filter(id => !staffIds.includes(id));
-      const toAddStaff = staffIds.filter(id => !currentStaffPublicIds.includes(id));
+      if (Array.isArray(staffIds) && staffIds.length === 0) {
+        const currentStaffIds = currentStaff.map(m => m.member.id);
 
-      // Zamiana na id bazy
-      const staffInDb = await tx.organizationMember.findMany({
-        where: { public_id: { in: [...toRemoveStaff, ...toAddStaff] } },
-      });
-      const publicIdToId = new Map(staffInDb.map(m => [m.public_id, m.id]));
-
-      if (toRemoveStaff.length) {
-        await tx.teamMember.deleteMany({
-          where: {
-            teamId: team.id,
-            memberId: {
-              in: toRemoveStaff.map(id => publicIdToId.get(id)).filter((id): id is number => id !== undefined),
-            },
-          },
-        });
-      }
-
-      for (const idToAdd of toAddStaff) {
-        const memberIdToAdd = publicIdToId.get(idToAdd);
-        if (memberIdToAdd) {
-          await tx.teamMember.create({
-            data: {
+        if (currentStaffIds.length > 0) {
+          await tx.teamMember.deleteMany({
+            where: {
               teamId: team.id,
-              memberId: memberIdToAdd,
+              memberId: { in: currentStaffIds },
             },
           });
+        }
+      } else {
+        const currentStaffPublicIds = currentStaff.map(m => m.member.public_id);
+
+        const toRemoveStaff = currentStaffPublicIds.filter(id => !staffIds.includes(id));
+        const toAddStaff = staffIds.filter(id => !currentStaffPublicIds.includes(id));
+
+        // Zamiana na id bazy
+        const staffInDb = await tx.organizationMember.findMany({
+          where: { public_id: { in: [...toRemoveStaff, ...toAddStaff] } },
+        });
+        const publicIdToId = new Map(staffInDb.map(m => [m.public_id, m.id]));
+
+        if (toRemoveStaff.length) {
+          await tx.teamMember.deleteMany({
+            where: {
+              teamId: team.id,
+              memberId: {
+                in: toRemoveStaff.map(id => publicIdToId.get(id)).filter((id): id is number => id !== undefined),
+              },
+            },
+          });
+        }
+
+        for (const idToAdd of toAddStaff) {
+          const memberIdToAdd = publicIdToId.get(idToAdd);
+          if (memberIdToAdd) {
+            await tx.teamMember.create({
+              data: {
+                teamId: team.id,
+                memberId: memberIdToAdd,
+              },
+            });
+          }
         }
       }
     }

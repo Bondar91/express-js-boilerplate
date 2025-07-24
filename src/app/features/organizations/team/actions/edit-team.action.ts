@@ -15,8 +15,8 @@ export const editTeamActionValidation = celebrate(
         fee: Joi.string()
           .pattern(/^(?=.+)(?!0+(\.0+)?$)\d+(\.\d+)?$/)
           .optional(),
-        memberIds: Joi.array().items(Joi.string().required()).min(1).optional(),
-        staffIds: Joi.array().items(Joi.string().required()).min(1).optional(),
+        memberIds: Joi.array().items(Joi.string()).optional(),
+        staffIds: Joi.array().items(Joi.string()).optional(),
       })
       .min(1),
   },

@@ -11,7 +11,7 @@ export class EditTeamHandler implements ICommandHandler<EditTeamCommand, void> {
 
     let convertedFee;
     if (fee) {
-      convertedFee = String(plnToCents(fee));
+      convertedFee = plnToCents(fee);
     }
 
     return await updateTeam({ ...command.payload, fee: convertedFee || fee });
