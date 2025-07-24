@@ -12,6 +12,7 @@ export const transformTeamResponse = (team: TTeamRaw) => {
     .map(items => {
       const trainerRole = items.member.roles.find(r => r.role.name === TRAINER_ROLE_NAME);
       return {
+        id: items.member.public_id,
         name: items.member.user.name,
         surname: items.member.user.surname,
         email: items.member.user.email,

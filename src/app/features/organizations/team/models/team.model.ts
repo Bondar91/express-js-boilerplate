@@ -43,6 +43,7 @@ export type TTeamQueryResult = {
 };
 
 export type TStaffMember = {
+  id: string;
   name: string | null;
   surname: string | null;
   email: string;
@@ -72,8 +73,13 @@ export interface IGetTeamParam {
   teamId: string;
 }
 
-export interface IEditTeamPayload extends ICreateTeamPayload {
+export interface IEditTeamPayload {
+  organizationId: string;
   teamId: string;
+  name?: string;
+  fee?: number;
+  memberIds?: string[];
+  staffIds?: string[];
 }
 
 export interface IAssignTeamMemberPayload {

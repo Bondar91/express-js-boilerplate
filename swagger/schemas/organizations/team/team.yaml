@@ -17,6 +17,9 @@ properties:
     items:
       type: object
       properties:
+        id:
+          type: string
+          example: "2439e3c8-eb99-41c8-b8e4-cb6e4c3ea7c3"
         name:
           type: string
           example: "Leader"
