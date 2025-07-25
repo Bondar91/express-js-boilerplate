@@ -307,6 +307,20 @@ export const findTeamMemberByPublicIds = async (
 export const deleteTeamsByPublicIds = async (organizationId: string, teamIds: string[]) => {
   const organization = await findOrganizationByPublicId(organizationId);
 
+  const teams = await prisma.team.findMany({
+    where: {
+      organizationId: organization.id,
+      public_id: { in: teamIds },
+    },
+    select: { id: true },
+  });
+
+  const idsTeam = teams.map(team => team.id);
+
+  await prisma.teamMember.deleteMany({
+    where: { teamId: { in: idsTeam } },
+  });
+
   const deleted = await prisma.team.deleteMany({
     where: {
       organizationId: organization.id,
