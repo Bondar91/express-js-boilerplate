@@ -7,7 +7,6 @@ import type {
   IUpdateMemberPayload,
   TAddMemberRole,
   TMemberRaw,
-  TMemberUpdateData,
 } from '../models/member.model';
 import type { Prisma } from '@prisma/client';
 import { MembershipStatus } from '@prisma/client';
@@ -16,8 +15,7 @@ import type { IPaginationParamsDto } from '@/shared/pagination-utils/pagination-
 import { calculateSkip, createOrderBy, createWhereInput } from '@/shared/pagination-utils/pagination-utils';
 import { memberPaginationOptions } from '../../config/pagination.config';
 import { NotFoundError } from '@/errors/not-found.error';
-import { hasSuperAdminRole } from '@/shared/role-utils/role-utils';
-import { createUser, findUserByEmail, updateUser } from '@/app/features/user/repository/user.repository';
+import { createUser, findUserByEmail } from '@/app/features/user/repository/user.repository';
 import { findOrganizationByPublicId } from '../../organization/repository/organization.repository';
 import { findRoleByPublicId, findRolesByPublicIds } from '@/app/features/system-role/repository/system-role.repository';
 import type { TSystemRole } from '@/app/features/system-role/models/system-role.model';
@@ -158,91 +156,118 @@ export const createMemberRole = async (data: ICreateMemberRolePayload, client: T
 export const updateMember = async (data: IUpdateMemberPayload) => {
   return prisma.$transaction(async tx => {
     const member = await findMemberByPublicId(data.organizationId, data.memberId);
+    const scalarUpdates: Record<string, unknown> = {};
 
-    if (data.name || data.surname || data.email) {
-      await updateUser(
-        member.user.public_id,
-        {
-          name: data.name,
-          surname: data.surname,
-          email: data.email,
-        },
-        tx,
-      );
+    if (data.name !== undefined) {
+      scalarUpdates.name = data.name;
     }
 
-    const memberUpdateData: TMemberUpdateData = {};
+    if (data.surname !== undefined) {
+      scalarUpdates.surname = data.surname;
+    }
+
+    if (data.email !== undefined) {
+      scalarUpdates.email = data.email;
+    }
+
+    if (data.fee !== undefined) {
+      scalarUpdates.fee = data.fee;
+    }
 
     if (data.status) {
-      memberUpdateData.status = data.status;
-      memberUpdateData.statusChangedAt = new Date();
-      memberUpdateData.statusChangedBy = data.updatedBy ? parseInt(data.updatedBy) : null;
+      scalarUpdates.status = data.status;
+      scalarUpdates.statusChangedAt = new Date();
+      scalarUpdates.statusChangedBy = data.updatedBy ? parseInt(data.updatedBy) : null;
     }
 
-    const memberUpdateDataNew = updateMemberDataBasedOnRoles(memberUpdateData, data.roles.add);
-
-    if (Object.keys(memberUpdateData).length > 0) {
+    if (Object.keys(scalarUpdates).length > 0) {
       await tx.organizationMember.update({
         where: { id: member.id },
-        data: memberUpdateDataNew,
+        data: scalarUpdates,
       });
     }
 
-    if (data.roles) {
-      const existingRoles = await findRolesByMemberId(member.id, tx);
+    if (data.roleIds !== undefined) {
+      const currentMemberRoles = await findRolesByMemberId(member.id, tx);
+      const currentRoleIds = currentMemberRoles.map(mr => mr.role.public_id);
+      const targetPublicRoleIds = data.roleIds;
 
-      if (data.roles.add && data.roles.add.length > 0) {
-        const newRoles = await findRolesByPublicIds(data.roles.add, tx);
-
-        if (newRoles.length !== data.roles.add.length) {
-          throw new NotFoundError('One or more roles to add not found');
-        }
-
-        const existingRoleIds = existingRoles.map(memberRole => memberRole.roleId);
-        const rolesToAdd = newRoles.filter(role => !existingRoleIds.includes(role.id));
-
-        for (const role of rolesToAdd) {
-          await createMemberRole(
-            {
-              memberId: member.id,
-              roleId: role.id,
-              addedBy: data.updatedBy,
-            },
-            tx,
-          );
-        }
+      const newRoles = targetPublicRoleIds.length > 0 ? await findRolesByPublicIds(targetPublicRoleIds, tx) : [];
+      if (newRoles.length !== targetPublicRoleIds.length) {
+        throw new NotFoundError('One or more roles to set not found');
       }
 
-      if (data.roles.remove && data.roles.remove.length > 0) {
-        const rolesToRemove = await findRolesByPublicIds(data.roles.remove);
+      const rolesToRemove = currentMemberRoles.filter(roleRel => !targetPublicRoleIds.includes(roleRel.role.public_id));
+      if (rolesToRemove.length > 0) {
+        await tx.memberRole.deleteMany({
+          where: {
+            memberId: member.id,
+            roleId: { in: rolesToRemove.map(r => r.roleId) },
+          },
+        });
+      }
 
-        if (rolesToRemove.length !== data.roles.remove.length) {
-          throw new NotFoundError('One or more roles to remove not found');
+      const publicIdsToAdd = targetPublicRoleIds.filter(public_id => !currentRoleIds.includes(public_id));
+      for (const rolePublicId of publicIdsToAdd) {
+        const role = newRoles.find(r => r.public_id === rolePublicId);
+        if (role) {
+          await tx.memberRole.create({
+            data: {
+              memberId: member.id,
+              roleId: role.id,
+              assignedBy: data.updatedBy ? parseInt(data.updatedBy) : null,
+            },
+          });
         }
+      }
+    }
 
-        const roleIdsToRemove = rolesToRemove.map(role => role.id);
-        const rolesToDelete = existingRoles.filter(memberRole => roleIdsToRemove.includes(memberRole.roleId));
+    if (data.teamIds !== undefined) {
+      const currentTeams = await tx.teamMember.findMany({
+        where: { memberId: member.id },
+        include: { team: true },
+      });
 
-        if (rolesToDelete.length > 0) {
-          const extractedRolesToDelete = rolesToDelete.map(({ role }) => role);
-          await deleteMemberRoles(extractedRolesToDelete, tx);
+      const currentTeamPublicIds = currentTeams.map(tm => tm.team.public_id);
+
+      const targetTeamPublicIds = data.teamIds;
+
+      const newTeams =
+        targetTeamPublicIds.length > 0
+          ? await tx.team.findMany({
+              where: { public_id: { in: targetTeamPublicIds } },
+            })
+          : [];
+      if (newTeams.length !== targetTeamPublicIds.length) {
+        throw new NotFoundError('One or more teams to set not found');
+      }
+
+      const teamsToRemove = currentTeams.filter(tm => !targetTeamPublicIds.includes(tm.team.public_id));
+      if (teamsToRemove.length > 0) {
+        await tx.teamMember.deleteMany({
+          where: {
+            memberId: member.id,
+            teamId: { in: teamsToRemove.map(tm => tm.teamId) },
+          },
+        });
+      }
+
+      const publicIdsToAdd = targetTeamPublicIds.filter(public_id => !currentTeamPublicIds.includes(public_id));
+      for (const teamPublicId of publicIdsToAdd) {
+        const team = newTeams.find(t => t.public_id === teamPublicId);
+        if (team) {
+          await tx.teamMember.create({
+            data: {
+              memberId: member.id,
+              teamId: team.id,
+            },
+          });
         }
       }
     }
 
     return member;
   });
-};
-
-const updateMemberDataBasedOnRoles = <T extends { isSuperAdmin?: boolean }>(
-  memberUpdateData: T,
-  roles: string[],
-): T => {
-  if (roles && roles.length > 0) {
-    memberUpdateData.isSuperAdmin = hasSuperAdminRole(roles);
-  }
-
-  return memberUpdateData;
 };
 
 export const findMemberByOrganizationAndUser = async (

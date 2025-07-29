@@ -38,15 +38,14 @@ export type TMemberResponse = Pick<TMember, 'public_id' | 'status'> & {
 export interface IUpdateMemberPayload {
   organizationId: string;
   memberId: string;
-  name: string;
-  surname: string;
-  email: string;
-  roles: {
-    add: string[];
-    remove: string[];
-  };
+  name?: string;
+  surname?: string;
+  email?: string;
+  roleIds?: Array<string>;
+  teamIds?: Array<string>;
   status?: MembershipStatus;
   updatedBy?: string | null;
+  fee?: string | number;
 }
 
 export type TMemberUpdateData = {
