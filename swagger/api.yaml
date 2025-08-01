@@ -69,6 +69,15 @@ paths:
       $ref: "paths/organizations/team/get.yaml#/get"
     patch:
       $ref: "paths/organizations/team/edit.yaml#/patch"
+      
+  /organizations/{organizationId}/invitation/resend:
+    post:
+      $ref: "paths/organizations/invitation/resend-invitation.yaml#/post"
+      
+  /organizations/{organizationId}/invitation/cancel:
+    post:
+      $ref: "paths/organizations/invitation/cancel-invitation.yaml#/post"
+    
     
   /users:
     get:

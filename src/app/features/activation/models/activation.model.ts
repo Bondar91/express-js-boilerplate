@@ -2,6 +2,7 @@ export interface ICreateActivationTokenPayload {
   userId: number;
   token: string;
   expiresAt: Date;
+  sentCount?: number;
 }
 
 export interface IResendActivationLinkPayload {

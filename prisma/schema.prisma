@@ -148,6 +148,7 @@ model ActivationToken {
     user      User     @relation(fields: [userId], references: [id])
     token     String   @unique
     used      Boolean  @default(false)
+    sentCount Int      @default(0)
     createdAt DateTime @default(now())
     expiresAt DateTime
 }
@@ -158,4 +159,5 @@ enum MembershipStatus {
     SUSPENDED // Tymczasowo zawieszony
     INACTIVE // Nieaktywny (np. były członek)
     BLOCKED // Zablokowany (np. z powodu naruszenia zasad)
+    CANCELLED // Anulowanie zaproszenia
 }
