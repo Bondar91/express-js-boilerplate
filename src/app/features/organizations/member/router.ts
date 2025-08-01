@@ -17,7 +17,7 @@ export const createMemberRouting = ({ commandBus, queryBus }: IMemberRouting) =>
   router.get('/', [listMemberActionValidation], listMemberAction(queryBus));
   router.get('/:memberId', [getMemberActionValidation], getMemberAction(queryBus));
   router.post('/', [createMemberActionValidation], createMemberAction(commandBus));
-  router.put('/:memberId', [editMemberActionValidation], editMemberAction(commandBus));
+  router.patch('/:memberId', [editMemberActionValidation], editMemberAction(commandBus));
 
   return router;
 };

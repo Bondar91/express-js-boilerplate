@@ -54,8 +54,8 @@ paths:
   /organizations/{organizationId}/members/{memberId}:
     get:
       $ref: "paths/organizations/member/get.yaml#/get"
-    put:
-      $ref: "paths/organizations/member/edit.yaml#/put"
+    patch:
+      $ref: "paths/organizations/member/edit.yaml#/patch"
 
   /organizations/{organizationId}/teams:
     post:

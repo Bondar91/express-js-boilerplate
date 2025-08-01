@@ -1,4 +1,4 @@
-put:
+patch:
   tags:
     - Members
   summary: Edytuj członka
@@ -27,31 +27,34 @@ put:
           properties:
             name:
               type: string
+              description: Imię (opcjonalne)
               example: "Jan"
             surname:
               type: string
+              description: Nazwisko (opcjonalne)
               example: "Kowalski"
             email:
               type: string
-              enum: ["CLUB", "ASSOCIATION", "FEDERATION"]
-              example: "CLUB"
+              description: Email (opcjonalne)
+              example: "test@example.com"
+            fee:
+              type: string
+              description: Opłata zespołu (opcjonalne)
+              example: "300 | 300.00"
             status:
               type: string
               enum: ["PENDING", "ACTIVE", "SUSPENDED", "INACTIVE", "BLOCKED"]
               example: "ACTIVE"
-            roles:
-              type: object
-              properties:
-                add:
-                  type: array
-                  items:
-                    type: string
-                  example: ["role_123456", "role_789012"]
-                remove:
-                  type: array
-                  items:
-                    type: string
-                  example: ["role_345678"]
+            roleIds:
+              type: array
+              items:
+                type: string
+              example: ["role_123456", "role_789012"]
+            teamIds:
+              type: array
+              items:
+                type: string
+              example: ["team_public_id_123456", "team_public_id_789012"]
   responses:
     "200":
       description: Członek została zaktualizowana
