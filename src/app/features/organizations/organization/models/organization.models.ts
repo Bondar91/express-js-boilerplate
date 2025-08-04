@@ -61,6 +61,7 @@ export interface IGetOrgranizationParam {
 export type TOrganizationStatisticRaw = {
   membersCount: number;
   teamsCount: number;
+  invitationsSent: number;
 };
 
 export type TOrganizationStatisticQueryResult = {

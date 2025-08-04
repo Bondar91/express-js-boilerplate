@@ -18,7 +18,7 @@ export const transformOrganizationResponse = (organization: TOrganizationRaw) =>
 };
 
 export const transformOrganizationStatisticResponse = (statistic: TOrganizationStatisticRaw) => {
-  const { membersCount, teamsCount } = statistic;
+  const { membersCount, teamsCount, invitationsSent } = statistic;
 
   return {
     fees: {
@@ -27,7 +27,7 @@ export const transformOrganizationStatisticResponse = (statistic: TOrganizationS
     },
     members: {
       activeMembersCount: membersCount,
-      sentInvitations: 10, //@TODO - Do zmiany na pobranie wartośći z API jak będą endpointy
+      sentInvitations: invitationsSent, //@TODO - Do zmiany na pobranie wartośći z API jak będą endpointy
     },
     teams: {
       teamsCount: teamsCount,

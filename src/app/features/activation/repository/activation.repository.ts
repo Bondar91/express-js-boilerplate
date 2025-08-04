@@ -15,7 +15,7 @@ export const deleteManyActivationTokenByUserId = async (userId: number) => {
   });
 };
 
-export const createActivationToken = async ({ userId, token, expiresAt }: ICreateActivationTokenPayload) => {
+export const createActivationToken = async ({ userId, token, expiresAt, sentCount }: ICreateActivationTokenPayload) => {
   return prisma.$transaction(async tx => {
     await deleteManyActivationTokenByUserId(userId);
 
@@ -24,6 +24,7 @@ export const createActivationToken = async ({ userId, token, expiresAt }: ICreat
         userId,
         token,
         expiresAt,
+        sentCount,
       },
     });
   });

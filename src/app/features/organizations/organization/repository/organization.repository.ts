@@ -181,17 +181,35 @@ export const findOrganizationById = async (id: number, client: TPrismaClientOrTr
 export const getOrganizationStatistics = async (organizationId: string) => {
   const organization = await findOrganizationByPublicId(organizationId);
 
-  const membersCount = await prisma.organizationMember.count({
-    where: { organizationId: organization.id },
-  });
+  const [membersCount, teamsCount, invitationsSent] = await Promise.all([
+    // Liczba członków
+    prisma.organizationMember.count({
+      where: { organizationId: organization.id },
+    }),
 
-  const teamsCount = await prisma.team.count({
-    where: { organizationId: organization.id },
-  });
+    // Liczba zespołów
+    prisma.team.count({
+      where: { organizationId: organization.id },
+    }),
+
+    // ✨ Suma wysłanych zaproszeń
+    prisma.activationToken.aggregate({
+      where: {
+        sentCount: { gt: 0 },
+        user: {
+          OrganizationMember: {
+            some: { organizationId: organization.id },
+          },
+        },
+      },
+      _sum: { sentCount: true },
+    }),
+  ]);
 
   return {
     membersCount,
     teamsCount,
+    invitationsSent: invitationsSent._sum.sentCount || 0,
     // @todo - inne statystyki
   };
 };

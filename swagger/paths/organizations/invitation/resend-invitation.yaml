@@ -1,0 +1,44 @@
+post:
+  summary: Resend Invitation
+  operationId: resendInvitation
+  tags:
+    - invitation
+  parameters:
+  - in: path
+    name: organizationId
+    required: true
+    schema:
+      type: string
+    description: Publiczny identyfikator organizacji
+    example: "1adcf784-e8f9-43a2-b9e0-31d03f19afb9"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../../schemas/invitation/resend-invitation-request.yaml"
+  responses:
+    "200":
+      description: Resend invitation  successful
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/response.yaml"
+    "400":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-400.yaml"
+    "404":
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-409.yaml"
+    "500":
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/common/error-default.yaml"
